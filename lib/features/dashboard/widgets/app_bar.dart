@@ -30,7 +30,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              'Live Classes',
+              user.adminType[0].toUpperCase() +
+                  user.adminType.substring(1).toLowerCase(),
               style: TextStyle(
                 color: Colors.white.withValues(alpha: 0.8),
                 fontSize: 14,
@@ -47,7 +48,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             children: [
               IconButton(
                 onPressed: () {},
-                icon: Icon(Icons.notifications_none,color: Colors.white,),
+                icon: Icon(Icons.notifications_none, color: Colors.white),
               ),
               Positioned(
                 right: 6,

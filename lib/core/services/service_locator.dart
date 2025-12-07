@@ -53,7 +53,7 @@ Future<void> init() async{
 
   //Repositories
   sl.registerLazySingleton<AuthRepository>(()=>AuthRepositoryImpl(sl()));
-  sl.registerLazySingleton<OnboardRepository>(()=>OnboardRepositoryImpl(sl()));
+  sl.registerLazySingleton<OnboardRepository>(()=>OnboardRepositoryImpl(sl(),sl()));
   sl.registerLazySingleton<CourseRepository>(()=>CourseRepositoryImpl(sl()));
   sl.registerLazySingleton<BranchRepository>(()=>BranchRepositoryImpl(sl()));
   sl.registerLazySingleton<SemesterRepository>(()=>SemesterRepositoryImpl(sl()));

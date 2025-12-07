@@ -12,6 +12,7 @@ import 'package:markme_admin/core/widgets/custom_button.dart';
 import 'package:markme_admin/core/widgets/custom_textbox.dart';
 import 'package:markme_admin/features/auth/bloc/auth_bloc.dart';
 import 'package:markme_admin/features/auth/bloc/auth_event.dart';
+import 'package:markme_admin/features/auth/models/auth_info.dart';
 import 'package:markme_admin/features/onboarding/bloc/onboard_bloc.dart';
 import 'package:markme_admin/features/onboarding/bloc/onboard_event.dart';
 import 'package:markme_admin/features/onboarding/bloc/onboard_state.dart';
@@ -21,13 +22,8 @@ import 'package:markme_admin/features/onboarding/widgets/profile_image_picker.da
 import '../cubit/admin_user_cubit.dart';
 
 class PersonalInfoScreen extends StatefulWidget {
-  final String uid;
-  final String phoneNumber;
-  const PersonalInfoScreen({
-    super.key,
-    required this.uid,
-    required this.phoneNumber,
-  });
+  final AuthInfo authInfo;
+  const PersonalInfoScreen({super.key, required this.authInfo});
   @override
   State<PersonalInfoScreen> createState() => _PersonalInfoScreenState();
 }
@@ -58,12 +54,12 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
         listener: (context, state) {
           if (state is OnboardLoading) {
             AppUtils.showCustomLoading(context);
-          }else{
+          } else {
             context.pop();
           }
           if (state is OnboardSuccess) {
             context.read<AdminUserCubit>().setUser(state.user);
-            context.go('/dashboardScreen',extra: state.user);
+            context.go('/dashboardScreen', extra: state.user);
           } else if (state is OnboardError) {
             context.read<AuthBloc>().add(LogoutRequested());
             AppUtils.showCustomSnackBar(context, state.errorMessage);
@@ -127,31 +123,45 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                   ),
                   CustomButton(
                     onTap: () {
-                     if(_selectedImage==null || nameController.text.trim().isEmpty){
-                       AppUtils.showCustomSnackBar(context, 'Add photo and name to proceed');
-                     }else{
-                       context.read<OnboardBloc>().add(
-                         SubmitPersonalInfoEvent(
-                           user: AdminUser(
-                             uid: widget.uid,
-                             name: nameController.text.trim(),
-                             phone: widget.phoneNumber,
-                             email: '',
-                             role: Constants.adminRole,
-                             collegeId: Constants.collegeId,
-                             collegeName: Constants.collegeName,
-                             designation: isSuperAdmin ? Constants.superAdminRole : Constants.adminRole,
-                             adminType: isSuperAdmin ? Constants.superAdminRole  : Constants.adminRole,
-                             joinedAt: DateFormat(
-                               'dd MMMM yyyy',
-                             ).format(DateTime.now()),
-                             profilePhotoUrl: '',
-                           ),
-                           profileImage: _selectedImage,
-                           isSuperAdmin: isSuperAdmin,
-                         ),
-                       );
-                     }
+                      if (_selectedImage == null ||
+                          nameController.text.trim().isEmpty) {
+                        AppUtils.showCustomSnackBar(
+                          context,
+                          'Add photo and name to proceed',
+                        );
+                      } else {
+                        context.read<OnboardBloc>().add(
+                          SubmitPersonalInfoEvent(
+                            user: AdminUser(
+                              uid: widget.authInfo.uid,
+                              deviceToken: "",
+                              name: nameController.text.trim(),
+                              phone: widget.authInfo.phoneNumber,
+                              email: '',
+                              role: Constants.adminRole,
+                              collegeId:
+                                  widget.authInfo.collegeId ??
+                                  Constants.collegeId,
+                              collegeName:
+                                  widget.authInfo.collegeName ??
+                                  Constants.collegeName,
+                              designation: isSuperAdmin
+                                  ? Constants.superAdminRole
+                                  : Constants.adminRole,
+                              adminType: isSuperAdmin
+                                  ? Constants.superAdminRole
+                                  : Constants.adminRole,
+                              joinedAt: DateFormat(
+                                'dd MMMM yyyy',
+                              ).format(DateTime.now()),
+                              profilePhotoUrl: '',
+                              bannerLink:widget.authInfo.bannerLink
+                            ),
+                            profileImage: _selectedImage,
+                            isSuperAdmin: isSuperAdmin,
+                          ),
+                        );
+                      }
                     },
                     text: "Create account",
                     icon: null,

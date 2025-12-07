@@ -17,7 +17,6 @@ import 'package:markme_admin/features/attendance/screens/current_session_attenda
 import 'package:markme_admin/features/auth/models/auth_info.dart';
 import 'package:markme_admin/features/auth/screens/auth_otp_screen.dart';
 import 'package:markme_admin/features/auth/screens/auth_phone_no_screen.dart';
-import 'package:markme_admin/features/auth/screens/splash_screen.dart';
 import 'package:markme_admin/features/classes/models/class_session.dart';
 import 'package:markme_admin/features/classes/screens/manage_classes.dart';
 import 'package:markme_admin/features/current_session/bloc/current_session_bloc.dart';
@@ -25,6 +24,7 @@ import 'package:markme_admin/features/dashboard/screens/admin_dashboard_screen.d
 import 'package:markme_admin/features/onboarding/bloc/onboard_bloc.dart';
 import 'package:markme_admin/features/onboarding/models/user_model.dart';
 import 'package:markme_admin/features/onboarding/screens/personal_info_screen.dart';
+import 'package:markme_admin/features/onboarding/screens/select_college_screen.dart';
 import 'package:markme_admin/features/permissions/screens/manage_permissions_screen.dart';
 import 'package:markme_admin/features/permissions/screens/student_permissions_screen.dart';
 import 'package:markme_admin/features/settings/bloc/setting_bloc.dart';
@@ -34,6 +34,7 @@ import 'package:markme_admin/features/subjects/screens/manage_subjects.dart';
 import 'package:markme_admin/features/teacher/bloc/teacher_bloc.dart';
 import 'package:markme_admin/features/teacher/screens/manage_teachers.dart';
 
+import '../features/auth/screens/splash_screen.dart';
 import '../features/settings/screens/setting_screen.dart';
 
 final GoRouter appRouter = GoRouter(
@@ -42,7 +43,9 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/',
       name: 'splash',
-      builder: (context, state) => SplashScreen(),
+      builder: (context, state) {
+        return SplashScreen();
+      },
     ),
     GoRoute(
       path: '/authPhone',
@@ -58,16 +61,24 @@ final GoRouter appRouter = GoRouter(
       },
     ),
     GoRoute(
+      path: '/selectCollege',
+      name: 'select_college',
+      builder: (context, state) {
+        final authInfo = state.extra as AuthInfo;
+        return BlocProvider(
+          create: (_) => OnboardBloc(sl()),
+          child: SelectCollegeScreen(authInfo: authInfo),
+        );
+      },
+    ),
+    GoRoute(
       path: '/onboarding',
       name: 'onboarding',
       builder: (context, state) {
         final authInfo = state.extra as AuthInfo;
         return BlocProvider(
           create: (_) => OnboardBloc(sl()), // This is a separate bloc — fine!
-          child: PersonalInfoScreen(
-            uid: authInfo.uid,
-            phoneNumber: authInfo.phoneNumber,
-          ),
+          child: PersonalInfoScreen(authInfo: authInfo),
         );
       },
     ),

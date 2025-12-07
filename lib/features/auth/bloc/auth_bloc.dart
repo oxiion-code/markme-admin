@@ -81,13 +81,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(UnAuthenticated());
       return;
     }
+    final uid=currentUser.uid;
+    final phoneNumber=currentUser.phoneNumber??"";
     final result = await authRepository.getUserdata(uid: currentUser.uid);
     result.fold(
-      (failure) => emit(AuthError(failure.message)),
+      (failure) {
+        if(failure.message=='User does not exist'){
+          final authInfo=AuthInfo(uid: uid, phoneNumber: phoneNumber);
+          emit(UserIsNotRegistered(authInfo: authInfo));
+        }else{
+          emit(AuthError(failure.message));
+        }
+      },
       (adminUser) => emit(UserAlreadyLoggedIn(adminUser)),
     );
   }
-
   Future<void> _onLogoutRequest(
     LogoutRequested event,
     Emitter<AuthState> emit,

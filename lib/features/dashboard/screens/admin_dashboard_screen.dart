@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -55,14 +56,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Scaffold(
       appBar: CustomAppBar(user: widget.user),
       drawer: DashboardDrawer(),
-      body: const _DashboardBody(),
+      body: _DashboardBody(user: widget.user),
     );
   }
 }
 
 class _DashboardBody extends StatelessWidget {
-  const _DashboardBody();
-
+  final AdminUser user;
+  const _DashboardBody({required this.user});
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<CurrentSessionBloc, CurrentClassSessionState>(
@@ -76,18 +77,38 @@ class _DashboardBody extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(20),
-                    bottomRight: Radius.circular(20),
+                if (user.bannerLink != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4.0,left: 2.0,right: 2.0),
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.only(
+                        bottomLeft: Radius.circular(8),
+                        bottomRight: Radius.circular(8),
+                      ),
+                      child: CachedNetworkImage(
+                        imageUrl:user.bannerLink!,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: 150,
+                        placeholder: (context, url) => Container(
+                          width: double.infinity,
+                          height: 150,
+                          color: Colors.grey.shade200,
+                          child: const Center(
+                            child: Center(child: Text("Loading..."),),
+                          ),
+                        ),
+                        errorWidget: (context, url, error) => Container(
+                          width: double.infinity,
+                          height: 150,
+                          color: Colors.grey.shade300,
+                          child: const Center(
+                            child: Icon(Icons.broken_image, size: 40, color: Colors.grey),
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-                  child: Image.asset(
-                    'assets/images/college_front.jpg',
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                    height: 150,
-                  ),
-                ),
                 const SizedBox(height: 16),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -153,9 +174,15 @@ class _DashboardBody extends StatelessWidget {
                               icon: Icons.wifi_tethering_rounded,
                               onTap: () {
                                 if (s.attendanceId != null) {
-                                  context.push("/currentSessionAttendance",extra: s);
+                                  context.push(
+                                    "/currentSessionAttendance",
+                                    extra: s,
+                                  );
                                 } else {
-                                  AppUtils.showCustomSnackBar(context, "Attendance is not taken");
+                                  AppUtils.showCustomSnackBar(
+                                    context,
+                                    "Attendance is not taken",
+                                  );
                                 }
                               },
                               attendanceTaken: s.attendanceId != null,
@@ -187,9 +214,15 @@ class _DashboardBody extends StatelessWidget {
                               icon: Icons.assignment_turned_in_rounded,
                               onTap: () {
                                 if (s.attendanceId != null) {
-                                  context.push("/currentSessionAttendance",extra: s);
+                                  context.push(
+                                    "/currentSessionAttendance",
+                                    extra: s,
+                                  );
                                 } else {
-                                  AppUtils.showCustomSnackBar(context, "Attendance is not taken");
+                                  AppUtils.showCustomSnackBar(
+                                    context,
+                                    "Attendance is not taken",
+                                  );
                                 }
                               },
                               attendanceTaken: s.attendanceId != null,
@@ -207,6 +240,7 @@ class _DashboardBody extends StatelessWidget {
       },
     );
   }
+
   Widget _emptySection(String text) => Padding(
     padding: const EdgeInsets.all(16.0),
     child: Center(
@@ -324,8 +358,22 @@ class _SessionCard extends StatelessWidget {
                 style: TextStyle(fontWeight: FontWeight.w600),
               ), //$subject ($sessionType)
               attendanceTaken
-                  ? Text('Attendance Taken', style: const TextStyle(fontSize: 15, color: Colors.green,fontWeight: FontWeight.bold))
-                  : Text('No Attendance', style: const TextStyle(fontSize: 15, color: Colors.red,fontWeight: FontWeight.bold)),
+                  ? Text(
+                      'Attendance Taken',
+                      style: const TextStyle(
+                        fontSize: 15,
+                        color: Colors.green,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
+                  : Text(
+                      'No Attendance',
+                      style: const TextStyle(
+                        fontSize: 15,
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
               Text('By $teacher', style: const TextStyle(fontSize: 13)),
             ],
           ),
@@ -345,7 +393,7 @@ class _SessionCard extends StatelessWidget {
             ),
           ),
         ),
-        onTap: onTap
+        onTap: onTap,
       ),
     );
   }

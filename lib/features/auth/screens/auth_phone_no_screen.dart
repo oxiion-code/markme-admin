@@ -45,7 +45,6 @@ class _AuthPhoneNumberScreenState extends State<AuthPhoneNumberScreen> {
 
               ..clearSnackBars()
               ..showSnackBar(SnackBar(content: Text(state.error)));
-            print(state.error);
           }
         },
         child: Padding(

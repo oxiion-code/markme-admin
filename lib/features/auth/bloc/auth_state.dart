@@ -38,10 +38,17 @@ class UserAlreadyLoggedIn extends AuthState{
   @override
   List<Object?> get props => [adminUser];
 }
+class UserIsNotRegistered extends AuthState{
+  final AuthInfo authInfo;
+  const UserIsNotRegistered({required this.authInfo});
+  @override
+  List<Object?> get props => [authInfo];
+}
 
 class UnAuthenticated extends AuthState{
 
 }
+
 class AuthError extends AuthState {
   final String error;
   const AuthError(this.error);

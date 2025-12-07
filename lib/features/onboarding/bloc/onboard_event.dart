@@ -18,3 +18,16 @@ class SubmitPersonalInfoEvent extends OnboardEvent{
   @override
   List<Object?> get props => [user,profileImage,isSuperAdmin];
 }
+class UploadBannerImageEvent extends OnboardEvent{
+  final File? bannerImage;
+  final String collegeUid;
+  const UploadBannerImageEvent({required this.bannerImage, required this.collegeUid});
+  @override
+  List<Object?> get props => [bannerImage,collegeUid];
+}
+
+class LoadAllClassesEvent extends OnboardEvent{
+  const LoadAllClassesEvent();
+  @override
+  List<Object?> get props => [];
+}

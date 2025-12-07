@@ -1,31 +1,32 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:markme_admin/core/theme/color_scheme.dart';
+import 'package:markme_admin/core/utils/app_utils.dart';
 
-class CustomButton extends StatelessWidget {
+class SplashButton extends StatelessWidget {
   final VoidCallback onTap;
   final String text;
   final IconData? icon;
   final Color? color;
-  const CustomButton({
+  const SplashButton({
     super.key,
     required this.onTap,
     required this.text,
     required this.icon,
-    this.color
+    this.color,
   });
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+    final theme= Theme.of(context);
     return SizedBox(
       height: 56,
       width: double.infinity,
       child: ElevatedButton(
         onPressed: onTap,
         style: ElevatedButton.styleFrom(
-          backgroundColor: color??AppColors.primaryLight,
+          backgroundColor:theme.buttonTheme.colorScheme?.secondary ,
           elevation: 8,
-          shadowColor: AppColors.primary,
+          shadowColor: theme.shadowColor,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -33,12 +34,13 @@ class CustomButton extends StatelessWidget {
           children: [
             Text(
               text,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500,
+              color:theme.colorScheme.primary ),
             ),
-            if(icon!=null)...[
-              const SizedBox(width: 8,),
-              Icon(icon,size:26,color: color?.withValues(alpha: 0.01,))
-            ]
+            if (icon != null) ...[
+              const SizedBox(width: 8),
+              Icon(icon, size: 26, color: theme.colorScheme.primary),
+            ],
           ],
         ),
       ),

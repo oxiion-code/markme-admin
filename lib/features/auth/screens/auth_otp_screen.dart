@@ -44,7 +44,7 @@ class _AuthOtpScreenState extends State<AuthOtpScreen> {
           }
           if(state is AuthenticationSuccess){
             if(state.isNewUser){
-              context.go('/onboarding',extra: state.authInfo);
+              context.go('/selectCollege',extra: state.authInfo);
             }else{
               if(state.adminUser!=null){
                 context.read<AdminUserCubit>().setUser(state.adminUser!);
