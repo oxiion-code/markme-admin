@@ -8,9 +8,14 @@ class CourseRepositoryImpl extends CourseRepository {
   final FirebaseFirestore _firebaseFirestore;
   CourseRepositoryImpl(this._firebaseFirestore);
   @override
-  Future<Either<AppFailure, Unit>> addCourse(Course course) async {
+  Future<Either<AppFailure, Unit>> addCourse(
+    Course course,
+    String collegeId,
+  ) async {
     try {
       await _firebaseFirestore
+          .collection('courses')
+          .doc(collegeId)
           .collection('courses')
           .doc(course.courseId)
           .set(course.toMap());
@@ -21,9 +26,14 @@ class CourseRepositoryImpl extends CourseRepository {
   }
 
   @override
-  Future<Either<AppFailure, Unit>> deleteCourse(Course course) async {
+  Future<Either<AppFailure, Unit>> deleteCourse(
+    Course course,
+    String collegeId,
+  ) async {
     try {
       await _firebaseFirestore
+          .collection('courses')
+          .doc(collegeId)
           .collection('courses')
           .doc(course.courseId)
           .delete();
@@ -34,9 +44,13 @@ class CourseRepositoryImpl extends CourseRepository {
   }
 
   @override
-  Future<Either<AppFailure, List<Course>>> getCourses() async {
+  Future<Either<AppFailure, List<Course>>> getCourses(String collegeId) async {
     try {
-      final snapshot = await _firebaseFirestore.collection('courses').get();
+      final snapshot = await _firebaseFirestore
+          .collection('courses')
+          .doc(collegeId)
+          .collection('courses')
+          .get();
       final courses = snapshot.docs
           .map((doc) => Course.fromMap(doc.data()))
           .toList();
@@ -47,9 +61,14 @@ class CourseRepositoryImpl extends CourseRepository {
   }
 
   @override
-  Future<Either<AppFailure, Unit>> updateCourse(Course course) async {
+  Future<Either<AppFailure, Unit>> updateCourse(
+    Course course,
+    String collegeId,
+  ) async {
     try {
       await _firebaseFirestore
+          .collection('courses')
+          .doc(collegeId)
           .collection('courses')
           .doc(course.courseId)
           .update(course.toMap());

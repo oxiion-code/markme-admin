@@ -23,10 +23,10 @@ class AcademicBatchBloc extends Bloc<AcademicBatchEvent, AcademicBatchState> {
     Emitter<AcademicBatchState> emit,
   ) async {
     emit(AcademicBatchLoading());
-    final result = await repository.addBatch(event.batch);
+    final result = await repository.addBatch(event.batch,event.collegeId);
     result.fold((failure) => emit(AcademicBatchError(failure.message)), (_) {
-      emit(AcademicBatchSuccess());
-      add(LoadAllBatchesEvent(branchId: event.batch.branchId));
+      emit(AcademicBatchAdded());
+      add(LoadAllBatchesEvent(branchId: event.batch.branchId,collegeId: event.collegeId));
     });
   }
 
@@ -35,10 +35,10 @@ class AcademicBatchBloc extends Bloc<AcademicBatchEvent, AcademicBatchState> {
     Emitter<AcademicBatchState> emit,
   ) async {
     emit(AcademicBatchLoading());
-    final result = await repository.updateBatch(event.batch);
+    final result = await repository.updateBatch(event.batch,event.collegeId);
     result.fold((failure) => emit(AcademicBatchError(failure.message)), (_) {
-      emit(AcademicBatchSuccess());
-      add(LoadAllBatchesEvent(branchId: event.batch.branchId));
+      emit(AcademicBatchUpdated());
+      add(LoadAllBatchesEvent(branchId: event.batch.branchId,collegeId: event.collegeId));
     });
   }
 
@@ -47,19 +47,18 @@ class AcademicBatchBloc extends Bloc<AcademicBatchEvent, AcademicBatchState> {
     Emitter<AcademicBatchState> emit,
   ) async {
     emit(AcademicBatchLoading());
-    final result = await repository.deleteBatch(event.batch);
+    final result = await repository.deleteBatch(event.batch,event.collegeId);
     result.fold((failure) => emit(AcademicBatchError(failure.message)), (_) {
-      emit(AcademicBatchSuccess());
-      add(LoadAllBatchesEvent(branchId: event.batch.branchId));
+      emit(AcademicBatchDeleted());
+      add(LoadAllBatchesEvent(branchId: event.batch.branchId, collegeId: event.collegeId));
     });
   }
-
   FutureOr<void> _loadAllBatches(
     LoadAllBatchesEvent event,
     Emitter<AcademicBatchState> emit,
   ) async {
     emit(AcademicBatchLoading());
-    final result = await repository.getBatches(event.branchId);
+    final result = await repository.getBatches(event.branchId,event.collegeId);
     result.fold((failure) => emit(AcademicBatchError(failure.message)), (
       batches,
     ) {
@@ -72,7 +71,7 @@ class AcademicBatchBloc extends Bloc<AcademicBatchEvent, AcademicBatchState> {
     Emitter<AcademicBatchState> emit,
   ) async {
     emit(AcademicBatchLoading());
-    final result = await branchRepository.loadAllBranches();
+    final result = await branchRepository.loadAllBranches(event.collegeId);
     result.fold((failure) => emit(AcademicBatchError(failure.message)), (
       branches,
     ) {
@@ -80,6 +79,7 @@ class AcademicBatchBloc extends Bloc<AcademicBatchEvent, AcademicBatchState> {
       add(
         LoadAllBatchesEvent(
           branchId: branches.isNotEmpty ? branches.first.branchId : "cse",
+          collegeId: event.collegeId
         ),
       );
     });

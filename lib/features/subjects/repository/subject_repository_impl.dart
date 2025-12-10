@@ -8,9 +8,14 @@ class SubjectRepositoryImpl extends SubjectRepository{
   final FirebaseFirestore _firestore;
   SubjectRepositoryImpl(this._firestore);
   @override
-  Future<Either<AppFailure, Unit>> addSubject(Subject subject) async {
+  Future<Either<AppFailure, Unit>> addSubject(Subject subject,String collegeId) async {
     try{
-      await _firestore.collection('subjects').doc(subject.subjectId).set(subject.toMap());
+      await _firestore
+          .collection('subjects')
+          .doc(collegeId)
+          .collection("subjects")
+          .doc(subject.subjectId)
+          .set(subject.toMap());
       return Right(unit);
     }catch(e){
       return Left(AppFailure(message: e.toString()));
@@ -18,9 +23,13 @@ class SubjectRepositoryImpl extends SubjectRepository{
   }
 
   @override
-  Future<Either<AppFailure, Unit>> deleteSubject(Subject subject) async{
+  Future<Either<AppFailure, Unit>> deleteSubject(Subject subject,String collegeId) async{
     try{
-      await _firestore.collection('subjects').doc(subject.subjectId).delete();
+      await _firestore
+          .collection('subjects')
+          .doc(collegeId)
+          .collection("subjects")
+          .doc(subject.subjectId).delete();
       return Right(unit);
     }catch(e){
       return Left(AppFailure(message: e.toString()));
@@ -28,9 +37,12 @@ class SubjectRepositoryImpl extends SubjectRepository{
   }
 
   @override
-  Future<Either<AppFailure, List<Subject>>> getSubjects() async{
+  Future<Either<AppFailure, List<Subject>>> getSubjects(String collegeId) async{
      try{
-       final snapshot= await _firestore.collection('subjects').get();
+       final snapshot= await _firestore .collection('subjects')
+           .doc(collegeId)
+           .collection("subjects")
+          .get();
        final subjects=snapshot.docs.map((subject)=>Subject.fromMap(subject.data())).toList();
        return Right(subjects);
      }catch(e){
@@ -39,9 +51,13 @@ class SubjectRepositoryImpl extends SubjectRepository{
   }
 
   @override
-  Future<Either<AppFailure, Unit>> updateSubject(Subject subject) async{
+  Future<Either<AppFailure, Unit>> updateSubject(Subject subject,String collegeId) async{
    try{
-     await _firestore.collection('subjects').doc(subject.subjectId).update(subject.toMap());
+     await _firestore
+         .collection('subjects')
+         .doc(collegeId)
+         .collection("subjects")
+         .doc(subject.subjectId).update(subject.toMap());
      return Right(unit);
    }catch(e){
      return Left(AppFailure(message: e.toString()));

@@ -8,6 +8,7 @@ import 'package:markme_admin/features/academic_structure/models/course.dart';
 import 'package:markme_admin/features/academic_structure/widgets/semester_widget/add_new_semester_bottom_sheet.dart';
 import 'package:markme_admin/features/academic_structure/widgets/semester_widget/edit_semester_bottom_sheet.dart';
 import 'package:markme_admin/features/academic_structure/widgets/semester_widget/semester_container.dart';
+import 'package:markme_admin/features/onboarding/cubit/admin_user_cubit.dart';
 
 import '../widgets/semester_widget/filter_course_bottom_sheet.dart';
 import '../widgets/semester_widget/filter_semester_app_bar.dart';
@@ -25,12 +26,14 @@ class _ManageSemestersState extends State<ManageSemesters> {
 
   @override
   void initState() {
+
     super.initState();
-    context.read<SemesterBloc>().add(LoadCoursesEvent());
+    final admin=context.read<AdminUserCubit>().state;
+    context.read<SemesterBloc>().add(LoadCoursesEvent(collegeId: admin!.collegeId));
   }
 
   /// Opens bottom sheet to add new semester
-  void _showAddSemesterBottomSheet() {
+  void _showAddSemesterBottomSheet(String collegeId) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -39,7 +42,7 @@ class _ManageSemestersState extends State<ManageSemesters> {
           return AddSemesterBottomSheet(
             courses: courses!,
             addSemester: (semester) {
-              context.read<SemesterBloc>().add(AddNewSemesterEvent(semester));
+              context.read<SemesterBloc>().add(AddNewSemesterEvent(semester,collegeId));
             },
           );
         } else {
@@ -52,7 +55,7 @@ class _ManageSemestersState extends State<ManageSemesters> {
     );
   }
 
-  void _showFilterBottomSheet() {
+  void _showFilterBottomSheet(String collegeId) {
     if (courses == null || courses!.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("No courses available")),
@@ -69,9 +72,12 @@ class _ManageSemestersState extends State<ManageSemesters> {
       builder: (context) {
         return FilterCourseBottomSheet(
           courses: courses!,
-          onCourseSelected: (selectedCourse) {
+          onCourseSelected: (course) {
+            setState(() {
+              selectedCourse=course;
+            });
             parentContext.read<SemesterBloc>().add(
-              LoadSemestersEvent(courseId: selectedCourse.courseId),
+              LoadSemestersEvent(courseId: course.courseId,collegeId: collegeId),
             );
           },
         );
@@ -82,18 +88,21 @@ class _ManageSemestersState extends State<ManageSemesters> {
 
   @override
   Widget build(BuildContext context) {
+    final collegeId= context.read<AdminUserCubit>().state!.collegeId;
     return Scaffold(
       appBar: SemesterAppNavBar(
         title: selectedCourse != null
             ? 'Semesters - ${selectedCourse!.courseName}'
             : 'Manage Semesters',
         onTap: (){
-          _showFilterBottomSheet();
+          _showFilterBottomSheet(collegeId);
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: const Color(0xFF1976D2),
-        onPressed: _showAddSemesterBottomSheet,
+        onPressed: (){
+          _showAddSemesterBottomSheet(collegeId);
+        },
         label: const Text(
           "Add Semester",
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
@@ -116,7 +125,7 @@ class _ManageSemestersState extends State<ManageSemesters> {
               selectedCourse = courses!.first;
               context
                   .read<SemesterBloc>()
-                  .add(LoadSemestersEvent(courseId: selectedCourse!.courseId));
+                  .add(LoadSemestersEvent(courseId: selectedCourse!.courseId,collegeId: collegeId));
             }
           } else if (state is SemesterFailure) {
             AppUtils.showCustomSnackBar(context, state.message);
@@ -152,7 +161,7 @@ class _ManageSemestersState extends State<ManageSemesters> {
                             courses: courses!,
                             onSaveEdit: (updatedSemester) {
                               context.read<SemesterBloc>().add(
-                                UpdateSemesterEvent(updatedSemester),
+                                UpdateSemesterEvent(updatedSemester,collegeId),
                               );
                             },
                           );
@@ -162,7 +171,7 @@ class _ManageSemestersState extends State<ManageSemesters> {
                     onDelete: () {
                       context
                           .read<SemesterBloc>()
-                          .add(DeleteSemesterEvent(semester));
+                          .add(DeleteSemesterEvent(semester,collegeId));
                     },
                   );
                 },

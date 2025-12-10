@@ -22,7 +22,7 @@ class BranchBloc extends Bloc<BranchEvent, BranchState> {
       Emitter<BranchState> emit,
       ) async {
     emit(BranchDataLoadingState());
-    final result = await branchRepository.addNewBranch(event.branch);
+    final result = await branchRepository.addNewBranch(event.branch,event.collegeId);
     result.fold(
           (failure) => emit(BranchFailureState(failure.message)),
           (_) => emit(BranchSuccess()),
@@ -35,7 +35,7 @@ class BranchBloc extends Bloc<BranchEvent, BranchState> {
       Emitter<BranchState> emit,
       ) async {
     emit(BranchDataLoadingState());
-    final result = await branchRepository.updateBranch(event.branch);
+    final result = await branchRepository.updateBranch(event.branch,event.collegeId);
     result.fold(
           (failure) => emit(BranchFailureState(failure.message)),
           (_) => emit(BranchSuccess()),
@@ -48,7 +48,7 @@ class BranchBloc extends Bloc<BranchEvent, BranchState> {
       Emitter<BranchState> emit,
       ) async {
     emit(BranchDataLoadingState());
-    final result = await branchRepository.deleteBranch(event.branch);
+    final result = await branchRepository.deleteBranch(event.branch,event.collegeId);
     result.fold(
           (failure) => emit(BranchFailureState(failure.message)),
           (_) => emit(BranchSuccess()),
@@ -61,7 +61,7 @@ class BranchBloc extends Bloc<BranchEvent, BranchState> {
     Emitter<BranchState> emit,
   ) async {
     emit(BranchDataLoadingState());
-    final result = await branchRepository.loadAllBranches();
+    final result = await branchRepository.loadAllBranches(event.collegeId);
     result.fold(
       (failure) => emit(BranchFailureState(failure.message)),
       (branches) => emit(BranchesLoaded(branches)),
@@ -74,7 +74,7 @@ class BranchBloc extends Bloc<BranchEvent, BranchState> {
     Emitter<BranchState> emit,
   ) async {
     emit(BranchDataLoadingState());
-    final result = await courseRepository.getCourses();
+    final result = await courseRepository.getCourses(event.collegeId);
     result.fold(
       (failure) => emit(BranchFailureState(failure.message)),
       (courses) => emit(LoadedCoursesForBranchState(courses)),

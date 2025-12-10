@@ -8,26 +8,39 @@ class BranchEvent extends Equatable {
 }
 
 class AddNewBranchEvent extends BranchEvent {
+  final String collegeId;
   final Branch branch;
-  const AddNewBranchEvent(this.branch);
+  const AddNewBranchEvent({required this.branch, required this.collegeId});
   @override
   List<Object?> get props => [branch];
 }
 
 class UpdateBranchEvent extends BranchEvent {
+  final String collegeId;
   final Branch branch;
-  const UpdateBranchEvent(this.branch);
+  const UpdateBranchEvent({required this.branch, required this.collegeId});
   @override
   List<Object?> get props => [branch];
 }
 
-class LoadBranchesEvent extends BranchEvent {}
+class LoadBranchesEvent extends BranchEvent {
+  final String collegeId;
+  const LoadBranchesEvent({required this.collegeId});
+  @override
+  List<Object?> get props => [collegeId];
+}
 
-class LoadCourseForBranchEvent extends BranchEvent {}
+class LoadCourseForBranchEvent extends BranchEvent {
+  final String collegeId;
+  const LoadCourseForBranchEvent({required this.collegeId});
+  @override
+  List<Object?> get props => [collegeId];
+}
 
 class DeleteBranchEvent extends BranchEvent {
   final Branch branch;
-  const DeleteBranchEvent(this.branch);
+  final String collegeId;
+  const DeleteBranchEvent({required this.branch, required this.collegeId});
   @override
   List<Object?> get props => [branch];
 }

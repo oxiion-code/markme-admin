@@ -16,30 +16,30 @@ class CourseBloc extends Bloc<CourseEvent,CourseState>{
 
   FutureOr<void> _onLoadCourses(LoadCourses event, Emitter<CourseState> emit) async {
     emit (CourseLoading());
-    final result=await repository.getCourses();
+    final result=await repository.getCourses(event.collegeId);
     result.fold((failure)=>emit(CourseError(failure.message)), (courses)=>emit(CourseLoaded(courses: courses)));
   }
 
   FutureOr<void> _onAddCourse(AddCourseEvent event, Emitter<CourseState> emit) async{
     emit(CourseLoading());
-    final result= await repository.addCourse(event.course);
-    result.fold((failure)=>emit( CourseError(failure.message)), (_)=>add(LoadCourses()));
+    final result= await repository.addCourse(event.course,event.collegeId);
+    result.fold((failure)=>emit( CourseError(failure.message)), (_)=>add(LoadCourses(collegeId: event.collegeId)));
   }
 
 
   FutureOr<void> _onUpdateCourse(UpdateCourseEvent event, Emitter<CourseState> emit) async {
-    final result = await repository.updateCourse(event.course);
+    final result = await repository.updateCourse(event.course,event.collegeId);
     result.fold(
           (failure) => emit(CourseError(failure.message)),
-          (_) => add(LoadCourses()), // reload after update
+          (_) => add(LoadCourses(collegeId: event.collegeId)), // reload after update
     );
   }
 
   FutureOr<void> _onDeleteCourse(DeleteCourseEvent event, Emitter<CourseState> emit) async{
-    final result = await repository.deleteCourse(event.course);
+    final result = await repository.deleteCourse(event.course,event.collegeId);
     result.fold(
           (failure) => emit(CourseError(failure.message)),
-          (_) => add(LoadCourses()), // reload after delete
+          (_) => add(LoadCourses(collegeId: event.collegeId)), // reload after delete
     );
   }
 }

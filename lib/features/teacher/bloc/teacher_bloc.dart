@@ -23,10 +23,10 @@ class TeacherBloc extends Bloc<TeacherEvent, TeacherState> {
     Emitter<TeacherState> emit,
   ) async {
     emit(TeacherLoading());
-    final result = await teacherRepository.addTeacher(event.teacher);
+    final result = await teacherRepository.addTeacher(event.teacher,event.collegeId);
     result.fold((failure) => emit(TeacherError(failure.message)), (_) {
       emit(TeacherSuccess());
-      add(LoadTeachersEvent());
+      add(LoadTeachersEvent(collegeId: event.collegeId));
     });
   }
 
@@ -35,10 +35,10 @@ class TeacherBloc extends Bloc<TeacherEvent, TeacherState> {
     Emitter<TeacherState> emit,
   ) async {
     emit(TeacherLoading());
-    final result = await teacherRepository.updateTeacher(event.teacher);
+    final result = await teacherRepository.updateTeacher(event.teacher,event.collegeId);
     result.fold((failure) => emit(TeacherError(failure.message)), (_) {
       emit(TeacherSuccess());
-      add(LoadTeachersEvent());
+      add(LoadTeachersEvent(collegeId: event.collegeId));
     });
   }
 
@@ -47,12 +47,12 @@ class TeacherBloc extends Bloc<TeacherEvent, TeacherState> {
     Emitter<TeacherState> emit,
   ) async {
     emit(TeacherLoading());
-    final result = await teacherRepository.deleteTeacher(event.teacher);
+    final result = await teacherRepository.deleteTeacher(event.teacher, event.collegeId);
     result.fold(
           (failure) => emit(TeacherError(failure.message)),
           (_){
         emit(TeacherSuccess());
-        add(LoadTeachersEvent());
+        add(LoadTeachersEvent(collegeId: event.collegeId));
       },
     );
   }
@@ -62,7 +62,7 @@ class TeacherBloc extends Bloc<TeacherEvent, TeacherState> {
     Emitter<TeacherState> emit,
   ) async {
     emit(TeacherLoading());
-    final result = await teacherRepository.getTeachers();
+    final result = await teacherRepository.getTeachers(event.collegeId);
     result.fold(
           (failure) => emit(TeacherError(failure.message)),
           (teachers){
@@ -76,12 +76,12 @@ class TeacherBloc extends Bloc<TeacherEvent, TeacherState> {
     Emitter<TeacherState> emit,
   ) async {
     emit(TeacherLoading());
-    final result = await branchRepository.loadAllBranches();
+    final result = await branchRepository.loadAllBranches(event.collegeId);
     result.fold(
           (failure) => emit(TeacherError(failure.message)),
           (branches){
         emit(LoadBranchesForTeacher(branches));
-        add(LoadTeachersEvent());
+        add(LoadTeachersEvent(collegeId: event.collegeId));
       },
     );
   }

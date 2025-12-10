@@ -10,6 +10,7 @@ import 'package:markme_admin/features/academic_structure/widgets/branch_widgets/
 import 'package:markme_admin/features/academic_structure/widgets/branch_widgets/branch_container.dart';
 import 'package:markme_admin/features/academic_structure/widgets/branch_widgets/edit_branch_bottom_sheet.dart';
 import 'package:markme_admin/core/theme/color_scheme.dart';
+import 'package:markme_admin/features/onboarding/cubit/admin_user_cubit.dart';
 
 class ManageBranches extends StatefulWidget {
   const ManageBranches({super.key});
@@ -23,13 +24,15 @@ class _ManageBranchesState extends State<ManageBranches> {
   final TextEditingController branchName = TextEditingController();
   late List<Course>? courses;
 
+
   @override
   void initState() {
     super.initState();
-    context.read<BranchBloc>().add(LoadCourseForBranchEvent());
+    final collegeId= context.read<AdminUserCubit>().state!.collegeId;
+    context.read<BranchBloc>().add(LoadCourseForBranchEvent(collegeId:collegeId ));
   }
 
-  void _showAddBranchSheet(BuildContext context) {
+  void _showAddBranchSheet(BuildContext context, String collegeId) {
     showModalBottomSheet(
       isScrollControlled: true,
       context: context,
@@ -39,7 +42,7 @@ class _ManageBranchesState extends State<ManageBranches> {
             branchIdController: branchId,
             branchNameController: branchName,
             onAddClick: (branch) {
-              context.read<BranchBloc>().add(AddNewBranchEvent(branch));
+              context.read<BranchBloc>().add(AddNewBranchEvent(branch: branch,collegeId: collegeId));
               branchId.clear();
               branchName.clear();
               Navigator.pop(context);
@@ -71,6 +74,7 @@ class _ManageBranchesState extends State<ManageBranches> {
 
   @override
   Widget build(BuildContext context) {
+    final collegeId=context.read<AdminUserCubit>().state!.collegeId;
     return Scaffold(
       backgroundColor: AppColors.scaffoldBg,
       appBar: AppBar(
@@ -95,7 +99,7 @@ class _ManageBranchesState extends State<ManageBranches> {
           "Add Branch",
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
         ),
-        onPressed: () => _showAddBranchSheet(context),
+        onPressed: () => _showAddBranchSheet(context,collegeId),
       ),
 
       body: BlocConsumer<BranchBloc, BranchState>(
@@ -112,12 +116,12 @@ class _ManageBranchesState extends State<ManageBranches> {
 
           if (state is LoadedCoursesForBranchState) {
             setState(() => courses = state.courses);
-            context.read<BranchBloc>().add(LoadBranchesEvent());
+            context.read<BranchBloc>().add(LoadBranchesEvent(collegeId: collegeId));
           }
 
           if (state is BranchSuccess) {
             AppUtils.showCustomSnackBar(context, "Operation successful");
-            context.read<BranchBloc>().add(LoadBranchesEvent());
+            context.read<BranchBloc>().add(LoadBranchesEvent(collegeId: collegeId));
           }
         },
         builder: (context, state) {
@@ -147,7 +151,7 @@ class _ManageBranchesState extends State<ManageBranches> {
                   return BranchContainer(
                     branch: branch,
                     onDelete: () {
-                      context.read<BranchBloc>().add(DeleteBranchEvent(branch));
+                      context.read<BranchBloc>().add(DeleteBranchEvent(branch: branch,collegeId: collegeId));
                     },
                     onEdit: () {
                       showModalBottomSheet(
@@ -155,7 +159,7 @@ class _ManageBranchesState extends State<ManageBranches> {
                         context: context,
                         builder: (_) => EditBranchBottomSheet(
                           onSaveEdit: (branch) {
-                            context.read<BranchBloc>().add(UpdateBranchEvent(branch));
+                            context.read<BranchBloc>().add(UpdateBranchEvent(branch: branch,collegeId: collegeId));
                           },
                           branch: branch,
                           courses: courses ?? [],
@@ -167,8 +171,7 @@ class _ManageBranchesState extends State<ManageBranches> {
               ),
             );
           }
-
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: Text("Loading..."));
         },
       ),
     );

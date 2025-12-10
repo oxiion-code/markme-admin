@@ -8,12 +8,12 @@ import 'package:markme_admin/features/academic_structure/bloc/course_bloc/course
 import 'package:markme_admin/features/academic_structure/widgets/course_widgets/add_course_bottom_sheet.dart';
 import 'package:markme_admin/features/academic_structure/widgets/course_widgets/course_container.dart';
 import 'package:markme_admin/features/academic_structure/widgets/course_widgets/edit_course_bottom_sheet.dart';
+import 'package:markme_admin/features/onboarding/cubit/admin_user_cubit.dart';
 
 import '../../../core/theme/color_scheme.dart';
 
 class ManageCourses extends StatefulWidget {
   const ManageCourses({super.key});
-
   @override
   State<ManageCourses> createState() => _ManageCoursesState();
 }
@@ -22,10 +22,11 @@ class _ManageCoursesState extends State<ManageCourses> {
   @override
   void initState() {
     super.initState();
-    context.read<CourseBloc>().add(LoadCourses());
+    final admin=context.read<AdminUserCubit>().state;
+    context.read<CourseBloc>().add(LoadCourses(collegeId:admin!.collegeId));
   }
 
-  void _showAddCourseSheet(BuildContext context) {
+  void _showAddCourseSheet(BuildContext context, String collegeId) {
     final courseBloc = context.read<CourseBloc>();
     showModalBottomSheet(
       context: context,
@@ -35,7 +36,7 @@ class _ManageCoursesState extends State<ManageCourses> {
           value: courseBloc,
           child: AddCourseBottomSheet(
             onAddClicked: (course) {
-              courseBloc.add(AddCourseEvent(course));
+              courseBloc.add(AddCourseEvent(course: course,collegeId: collegeId));
             },
           ),
         );
@@ -45,6 +46,7 @@ class _ManageCoursesState extends State<ManageCourses> {
 
   @override
   Widget build(BuildContext context) {
+    final admin=context.read<AdminUserCubit>().state;
     return Scaffold(
       backgroundColor: AppColors.scaffoldBg,
       appBar: AppBar(
@@ -65,7 +67,7 @@ class _ManageCoursesState extends State<ManageCourses> {
       // ✅ Floating Action Button instead of AppBar Button
         floatingActionButton: FloatingActionButton.extended(
           backgroundColor: AppColors.primaryDark,
-          onPressed: () => _showAddCourseSheet(context),
+          onPressed: () => _showAddCourseSheet(context,admin!.collegeId),
           icon: const Icon(Icons.add, color: Colors.white),
           label: const Text(
             "Add Course",
@@ -131,7 +133,7 @@ class _ManageCoursesState extends State<ManageCourses> {
                           return EditCourseBottomSheet(
                             onSaveEdit: (updatedCourse) {
                               context.read<CourseBloc>().add(
-                                UpdateCourseEvent(updatedCourse),
+                                UpdateCourseEvent(course: updatedCourse,collegeId: admin!.collegeId),
                               );
                             },
                             course: course,
@@ -142,7 +144,7 @@ class _ManageCoursesState extends State<ManageCourses> {
                     onDelete: () {
                       context
                           .read<CourseBloc>()
-                          .add(DeleteCourseEvent(course));
+                          .add(DeleteCourseEvent(course: course, collegeId: admin!.collegeId));
                     },
                   );
                 },

@@ -33,10 +33,10 @@ class SectionBloc extends Bloc<SectionEvent, SectionState> {
     Emitter<SectionState> emit,
   ) async {
     emit(SectionLoading());
-    final result = await sectionRepository.addSection(event.section);
+    final result = await sectionRepository.addSection(event.section,event.collegeId);
     result.fold((failure) => emit(SectionError(failure.message)), (_) {
       emit(SectionSuccess());
-      add(LoadAllSectionEvent(branchId: event.section.branchId));
+      add(LoadAllSectionEvent(branchId: event.section.branchId,collegeId: event.collegeId));
     });
   }
 
@@ -45,10 +45,10 @@ class SectionBloc extends Bloc<SectionEvent, SectionState> {
     Emitter<SectionState> emit,
   ) async {
     emit(SectionLoading());
-    final result = await sectionRepository.updateSection(event.section);
+    final result = await sectionRepository.updateSection(event.section, event.collegeId);
     result.fold((failure) => emit(SectionError(failure.message)), (_) {
       emit(SectionSuccess());
-      add(LoadAllSectionEvent(branchId: event.section.branchId));
+      add(LoadAllSectionEvent(branchId: event.section.branchId,collegeId: event.collegeId));
     });
   }
 
@@ -57,10 +57,10 @@ class SectionBloc extends Bloc<SectionEvent, SectionState> {
     Emitter<SectionState> emit,
   ) async {
     emit(SectionLoading());
-    final result = await sectionRepository.deleteSection(event.section);
+    final result = await sectionRepository.deleteSection(event.section,event.collegeId);
     result.fold((failure) => emit(SectionError(failure.message)), (_) {
       emit(SectionSuccess());
-      add(LoadAllSectionEvent(branchId: event.section.branchId));
+      add(LoadAllSectionEvent(branchId: event.section.branchId,collegeId: event.collegeId));
     });
   }
 
@@ -69,7 +69,7 @@ class SectionBloc extends Bloc<SectionEvent, SectionState> {
     Emitter<SectionState> emit,
   ) async {
     emit(SectionLoading());
-    final result = await batchRepository.getBatches(event.branchId);
+    final result = await batchRepository.getBatches(event.branchId,event.collegeId);
     result.fold((failure) => emit(SectionError(failure.message)), (batches) {
       emit(BatchesLoaded(batches));
     });
@@ -80,7 +80,7 @@ class SectionBloc extends Bloc<SectionEvent, SectionState> {
     Emitter<SectionState> emit,
   ) async {
     emit(SectionLoading());
-    final result = await sectionRepository.getAllSections(event.branchId);
+    final result = await sectionRepository.getAllSections(event.branchId,event.collegeId);
     result.fold(
       (failure) => emit(SectionError(failure.message)),
       (sections) => emit(SectionsLoaded(sections)),
@@ -92,7 +92,7 @@ class SectionBloc extends Bloc<SectionEvent, SectionState> {
     Emitter<SectionState> emit,
   ) async {
     emit(SectionLoading());
-    final result = await branchRepository.loadAllBranches();
+    final result = await branchRepository.loadAllBranches(event.collegeId);
     result.fold(
       (failure) => emit(SectionError(failure.message)),
       (branches) => emit(BranchesLoaded(branches)),
@@ -104,7 +104,7 @@ class SectionBloc extends Bloc<SectionEvent, SectionState> {
     Emitter<SectionState> emit,
   ) async {
     emit(SectionLoading());
-    final result = await teacherRepository.getTeachersForBranch(event.branchId);
+    final result = await teacherRepository.getTeachersForBranch(event.branchId,event.collegeId);
     result.fold(
       (failure) => emit(SectionError(failure.message)),
       (teachers) => emit(TeachersLoadedForSection(teachers)),

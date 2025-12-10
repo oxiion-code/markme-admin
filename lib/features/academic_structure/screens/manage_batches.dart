@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:markme_admin/core/utils/app_utils.dart';
 import 'package:markme_admin/core/theme/color_scheme.dart';
 import 'package:markme_admin/features/academic_structure/bloc/batch_bloc/academic_batch_bloc.dart';
@@ -12,11 +13,12 @@ import 'package:markme_admin/features/academic_structure/models/branch.dart';
 import 'package:markme_admin/features/academic_structure/widgets/batch_widgets/add_batch_bottom_sheet.dart';
 import 'package:markme_admin/features/academic_structure/widgets/batch_widgets/batch_container.dart';
 import 'package:markme_admin/features/academic_structure/widgets/semester_widget/filter_semester_app_bar.dart';
+import 'package:markme_admin/features/onboarding/cubit/admin_user_cubit.dart';
 
 class ManageBatches extends StatefulWidget {
   const ManageBatches({super.key});
 
-  @override
+  @override 
   State<ManageBatches> createState() => _ManageBatchesState();
 }
 
@@ -28,7 +30,8 @@ class _ManageBatchesState extends State<ManageBatches> {
   @override
   void initState() {
     super.initState();
-    context.read<AcademicBatchBloc>().add(LoadAllBranchesEvent());
+    final collegeId=context.read<AdminUserCubit>().state!.collegeId;
+    context.read<AcademicBatchBloc>().add(LoadAllBranchesEvent(collegeId: collegeId));
   }
 
   final List<IconData> _icons = const [
@@ -56,7 +59,7 @@ class _ManageBatchesState extends State<ManageBatches> {
   Color getRandomColor() =>
       _standardColors[random.nextInt(_standardColors.length)];
 
-  void _showAddBatchSheet(BuildContext context) {
+  void _showAddBatchSheet(BuildContext context,String collegeId) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -73,13 +76,13 @@ class _ManageBatchesState extends State<ManageBatches> {
         return AddBatchBottomSheet(
           branches: branches!,
           onAddBatchClick: (batch) {
-            context.read<AcademicBatchBloc>().add(AddBatchEvent(batch));
+            context.read<AcademicBatchBloc>().add(AddBatchEvent(batch,collegeId));
           },
         );
       },
     );
   }
-  void _showBranchFilterSheet(BuildContext context) {
+  void _showBranchFilterSheet(BuildContext context,String collegeId) {
     if (branches == null || branches!.isEmpty) {
       AppUtils.showCustomSnackBar(context, "No branches available");
       return;
@@ -124,7 +127,7 @@ class _ManageBatchesState extends State<ManageBatches> {
                     });
                     Navigator.pop(context);
                     context.read<AcademicBatchBloc>().add(
-                      LoadAllBatchesEvent(branchId: branch.branchId),
+                      LoadAllBatchesEvent(branchId: branch.branchId, collegeId: collegeId),
                     );
                   },
                 ),
@@ -138,13 +141,14 @@ class _ManageBatchesState extends State<ManageBatches> {
 
   @override
   Widget build(BuildContext context) {
+    final collegeId=context.read<AdminUserCubit>().state!.collegeId;
     return Scaffold(
       backgroundColor: AppColors.scaffoldBg,
       appBar: SemesterAppNavBar(
         title: selectedBranch == null
             ? "Manage Batches"
             : "Manage Batches (${selectedBranch!.branchName})",
-        onTap: () => _showBranchFilterSheet(context), // filter button
+        onTap: () => _showBranchFilterSheet(context,collegeId), // filter button
       ),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: AppColors.primary,
@@ -153,7 +157,7 @@ class _ManageBatchesState extends State<ManageBatches> {
           "Add Batch",
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
         ),
-        onPressed: () => _showAddBatchSheet(context),
+        onPressed: () => _showAddBatchSheet(context,collegeId),
       ),
       body: BlocConsumer<AcademicBatchBloc, AcademicBatchState>(
         listener: (context, state) {
@@ -170,17 +174,30 @@ class _ManageBatchesState extends State<ManageBatches> {
                 selectedBranch = branches!.first;
                 context.read<AcademicBatchBloc>().add(
                   LoadAllBatchesEvent(
-                      branchId: selectedBranch!.branchId),
+                      branchId: selectedBranch!.branchId,collegeId: collegeId),
                 );
               }
             });
           } else if (state is AcademicBatchError) {
             AppUtils.showCustomSnackBar(context, state.message);
-          } else if (state is AcademicBatchSuccess) {
-            AppUtils.showCustomSnackBar(context, "Operation successful");
+          } else if (state is AcademicBatchAdded) {
+            AppUtils.showCustomSnackBar(context, "New academic batch added");
             if (selectedBranch != null) {
               context.read<AcademicBatchBloc>().add(
-                LoadAllBatchesEvent(branchId: selectedBranch!.branchId),
+                LoadAllBatchesEvent(branchId: selectedBranch!.branchId,collegeId: collegeId),
+              );
+            }
+          }else if(state is AcademicBatchDeleted){
+            AppUtils.showCustomSnackBar(context, "Deleted Batch");
+            if(selectedBranch!= null){
+              context.read<AcademicBatchBloc>().add(
+                LoadAllBatchesEvent(branchId: selectedBranch!.branchId,collegeId: collegeId),
+              );
+            }
+          }else if(state is AcademicBatchUpdated){
+            if(selectedBranch!=null){
+              context.read<AcademicBatchBloc>().add(
+                LoadAllBatchesEvent(branchId: selectedBranch!.branchId,collegeId: collegeId),
               );
             }
           }
@@ -223,14 +240,14 @@ class _ManageBatchesState extends State<ManageBatches> {
                     onRightCornerButtonPressed: () {
                       context
                           .read<AcademicBatchBloc>()
-                          .add(DeleteBatchEvent(batch));
+                          .add(DeleteBatchEvent(collegeId: collegeId,batch: batch));
                     },
                   );
                 },
               ),
             );
           }
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: Text("Loading..."));
         },
       ),
     );

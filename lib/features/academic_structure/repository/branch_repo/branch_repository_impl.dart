@@ -9,10 +9,15 @@ class BranchRepositoryImpl extends BranchRepository {
   BranchRepositoryImpl(this._firestore);
 
   @override
-  Future<Either<AppFailure, Unit>> addNewBranch(Branch branch) async {
+  Future<Either<AppFailure, Unit>> addNewBranch(
+    Branch branch,
+    String collegeId,
+  ) async {
     try {
       await _firestore
           .collection('branches')
+          .doc(collegeId)
+          .collection("branches")
           .doc(branch.branchId)
           .set(branch.toMap());
       return Right(unit);
@@ -22,9 +27,16 @@ class BranchRepositoryImpl extends BranchRepository {
   }
 
   @override
-  Future<Either<AppFailure, Unit>> deleteBranch(Branch branch) async {
+  Future<Either<AppFailure, Unit>> deleteBranch(
+    Branch branch,
+    String collegeId,
+  ) async {
     try {
-      await _firestore.collection('branches').doc(branch.branchId).delete();
+      await _firestore.collection('branches')
+          .doc(collegeId)
+          .collection("branches")
+          .doc(branch.branchId)
+          .delete();
       return Right(unit);
     } catch (e) {
       return Left(AppFailure(message: e.toString()));
@@ -32,9 +44,14 @@ class BranchRepositoryImpl extends BranchRepository {
   }
 
   @override
-  Future<Either<AppFailure, List<Branch>>> loadAllBranches() async {
+  Future<Either<AppFailure, List<Branch>>> loadAllBranches(
+    String collegeId,
+  ) async {
     try {
-      final snapshot = await _firestore.collection('branches').get();
+      final snapshot = await _firestore.collection('branches')
+          .doc(collegeId)
+          .collection("branches")
+          .get();
       final branches = snapshot.docs
           .map((doc) => Branch.fromMap(doc.data()))
           .toList();
@@ -45,10 +62,15 @@ class BranchRepositoryImpl extends BranchRepository {
   }
 
   @override
-  Future<Either<AppFailure, Unit>> updateBranch(Branch branch) async {
+  Future<Either<AppFailure, Unit>> updateBranch(
+    Branch branch,
+    String collegeId,
+  ) async {
     try {
       await _firestore
           .collection('branches')
+          .doc(collegeId)
+          .collection("branches")
           .doc(branch.branchId)
           .update(branch.toMap());
       return Right(unit);

@@ -12,6 +12,7 @@ import 'package:markme_admin/features/academic_structure/models/branch.dart';
 import 'package:markme_admin/features/academic_structure/widgets/section_widgets/add_section_bottom_sheet.dart';
 import 'package:markme_admin/features/academic_structure/widgets/section_widgets/section_card.dart';
 import 'package:markme_admin/features/academic_structure/widgets/semester_widget/filter_semester_app_bar.dart';
+import 'package:markme_admin/features/onboarding/cubit/admin_user_cubit.dart';
 
 import '../../teacher/models/teacher.dart';
 
@@ -32,11 +33,12 @@ class _ManageSectionsState extends State<ManageSections> {
   @override
   void initState() {
     super.initState();
-    context.read<SectionBloc>().add(LoadAllBranchesEvent());
+    final collegeId=context.read<AdminUserCubit>().state!.collegeId;
+    context.read<SectionBloc>().add(LoadAllBranchesEvent(collegeId: collegeId));
   }
 
   // ------------------------ FILTER SHEET -------------------------
-  void _showBranchFilterSheet(BuildContext context) {
+  void _showBranchFilterSheet(BuildContext context,String collegeId) {
     if (branches == null || branches!.isEmpty) {
       AppUtils.showCustomSnackBar(context, "No branches available");
       return;
@@ -81,7 +83,7 @@ class _ManageSectionsState extends State<ManageSections> {
 
                   // Load batches of selected branch
                   context.read<SectionBloc>().add(
-                    LoadAllBatchesEvent(branchId: branch.branchId),
+                    LoadAllBatchesEvent(branchId: branch.branchId,collegeId: collegeId),
                   );
                 },
               )),
@@ -93,7 +95,7 @@ class _ManageSectionsState extends State<ManageSections> {
   }
 
   // ------------------------ ADD SECTION SHEET -------------------------
-  void _showAddSectionSheet(BuildContext context) {
+  void _showAddSectionSheet(BuildContext context,String collegeId) {
     if (branches == null || batches == null) {
       AppUtils.showCustomSnackBar(context, "Please wait, still loading...");
       return;
@@ -110,7 +112,7 @@ class _ManageSectionsState extends State<ManageSections> {
         child: AddSectionBottomSheet(
           branches: branches!,
           onAddSectionClick: (section) {
-            context.read<SectionBloc>().add(AddNewSectionEvent(section));
+            context.read<SectionBloc>().add(AddNewSectionEvent(section: section, collegeId: collegeId));
           },
         ),
       ),
@@ -120,6 +122,7 @@ class _ManageSectionsState extends State<ManageSections> {
 
   @override
   Widget build(BuildContext context) {
+    final collegeId=context.read<AdminUserCubit>().state!.collegeId;
     return Scaffold(
       backgroundColor: AppColors.scaffoldBg,
 
@@ -127,7 +130,7 @@ class _ManageSectionsState extends State<ManageSections> {
         title: selectedBranch == null
             ? "Manage Sections"
             : "Manage Sections (${selectedBranch!.branchName})",
-        onTap: () => _showBranchFilterSheet(context),
+        onTap: () => _showBranchFilterSheet(context,collegeId),
       ),
 
       floatingActionButton: FloatingActionButton.extended(
@@ -137,7 +140,7 @@ class _ManageSectionsState extends State<ManageSections> {
           "Add Section",
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
         ),
-        onPressed: () => _showAddSectionSheet(context),
+        onPressed: () => _showAddSectionSheet(context,collegeId),
       ),
 
       body: BlocConsumer<SectionBloc, SectionState>(
@@ -157,7 +160,7 @@ class _ManageSectionsState extends State<ManageSections> {
 
             if (selectedBranch != null) {
               context.read<SectionBloc>().add(
-                LoadAllSectionEvent(branchId: selectedBranch!.branchId),
+                LoadAllSectionEvent(branchId: selectedBranch!.branchId,collegeId: collegeId),
               );
             }
           }
@@ -168,7 +171,7 @@ class _ManageSectionsState extends State<ManageSections> {
               selectedBranch ??= branches!.first;
 
               context.read<SectionBloc>().add(
-                LoadAllBatchesEvent(branchId: selectedBranch!.branchId),
+                LoadAllBatchesEvent(branchId: selectedBranch!.branchId,collegeId: collegeId),
               );
             }
           }
@@ -178,7 +181,7 @@ class _ManageSectionsState extends State<ManageSections> {
 
             if (selectedBranch != null) {
               context.read<SectionBloc>().add(
-                LoadAllSectionEvent(branchId: selectedBranch!.branchId),
+                LoadAllSectionEvent(branchId: selectedBranch!.branchId, collegeId: collegeId),
               );
             }
           }
@@ -201,7 +204,6 @@ class _ManageSectionsState extends State<ManageSections> {
                 ),
               );
             }
-
             return ListView.builder(
               itemCount: state.sections.length,
               itemBuilder: (context, index) {
@@ -209,14 +211,13 @@ class _ManageSectionsState extends State<ManageSections> {
                 return SectionCard(
                   section: section,
                   onDelete: () => context.read<SectionBloc>().add(
-                    DeleteSectionEvent(section),
+                    DeleteSectionEvent(section: section, collegeId: collegeId),
                   ),
                 );
               },
             );
           }
-
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: Text("Loading..."));
         },
       ),
     );

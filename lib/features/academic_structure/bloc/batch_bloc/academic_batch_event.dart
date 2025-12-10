@@ -10,14 +10,16 @@ class AcademicBatchEvent extends Equatable{
 
 class AddBatchEvent extends AcademicBatchEvent{
   final AcademicBatch batch;
-  const AddBatchEvent(this.batch);
+  final String collegeId;
+  const AddBatchEvent(this.batch, this.collegeId);
   @override
   List<Object?> get props => [batch];
 }
 
 class UpdateBatchEvent extends AcademicBatchEvent{
   final AcademicBatch batch;
-  const UpdateBatchEvent(this.batch);
+  final String collegeId;
+  const UpdateBatchEvent({required this.batch, required this.collegeId});
   @override
   // TODO: implement props
   List<Object?> get props => [];
@@ -25,18 +27,22 @@ class UpdateBatchEvent extends AcademicBatchEvent{
 
 class DeleteBatchEvent extends AcademicBatchEvent{
   final AcademicBatch batch;
-  const DeleteBatchEvent(this.batch);
+  final String collegeId;
+  const DeleteBatchEvent({required this.batch, required this.collegeId});
   @override
-  // TODO: implement props
   List<Object?> get props => [batch];
 }
  class LoadAllBatchesEvent extends AcademicBatchEvent{
   final String branchId;
-  const LoadAllBatchesEvent({required this.branchId});
+  final String collegeId;
+  const LoadAllBatchesEvent({required this.branchId, required this.collegeId});
   @override
   List<Object?> get props => [branchId];
  }
 
  class LoadAllBranchesEvent extends AcademicBatchEvent{
-
+  final String collegeId;
+  const LoadAllBranchesEvent({required this.collegeId});
+  @override
+  List<Object?> get props => [collegeId];
  }

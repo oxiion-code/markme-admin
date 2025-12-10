@@ -3,9 +3,9 @@ import 'package:markme_admin/core/error/failure.dart';
 import 'package:markme_admin/features/teacher/models/teacher.dart';
 
 abstract class TeacherRepository{
-  Future<Either<AppFailure,Unit>> addTeacher(Teacher teacher);
-  Future<Either<AppFailure,Unit>> updateTeacher(Teacher teacher);
-  Future<Either<AppFailure,Unit>> deleteTeacher(Teacher teacher);
-  Future<Either<AppFailure,List<Teacher>>> getTeachers();
-  Future<Either<AppFailure, List<Teacher>>> getTeachersForBranch(String branchId);
+  Future<Either<AppFailure,Unit>> addTeacher(Teacher teacher,String collegeId);
+  Future<Either<AppFailure,Unit>> updateTeacher(Teacher teacher,String collegeId);
+  Future<Either<AppFailure,Unit>> deleteTeacher(Teacher teacher,String collegeId);
+  Future<Either<AppFailure,List<Teacher>>> getTeachers(String collegeId);
+  Future<Either<AppFailure, List<Teacher>>> getTeachersForBranch(String branchId,String collegeId);
 }

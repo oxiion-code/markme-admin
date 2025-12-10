@@ -14,10 +14,15 @@ class AcademicBatchInitial extends AcademicBatchState{
 class AcademicBatchLoading extends AcademicBatchState{
 
 }
-class AcademicBatchSuccess extends AcademicBatchState{
+class AcademicBatchAdded extends AcademicBatchState{
 
 }
+class AcademicBatchDeleted extends AcademicBatchState{
 
+}
+class AcademicBatchUpdated extends AcademicBatchState{
+
+}
 class AcademicBatchError extends AcademicBatchState{
   final String message;
   const AcademicBatchError(this.message);

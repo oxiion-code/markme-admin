@@ -22,37 +22,37 @@ class SemesterBloc extends Bloc<SemesterEvent, SemesterState> {
   FutureOr<void> _addNewSemester(AddNewSemesterEvent event,
       Emitter<SemesterState> emit,) async {
     emit(SemesterLoading());
-    final result = await semesterRepository.addSemester(event.semester);
+    final result = await semesterRepository.addSemester(event.semester,event.collegeId);
     result.fold((failure) => emit(SemesterFailure(failure.message)), (_) {
       emit(SemesterSuccess());
-      add(LoadSemestersEvent(courseId: event.semester.courseId));
+      add(LoadSemestersEvent(courseId: event.semester.courseId,collegeId: event.collegeId));
     });
   }
 
   FutureOr<void> _deleteSemester(DeleteSemesterEvent event,
       Emitter<SemesterState> emit,) async {
     emit(SemesterLoading());
-    final result = await semesterRepository.deleteSemester(event.semester);
+    final result = await semesterRepository.deleteSemester(event.semester,event.collegeId);
     result.fold((failure) => emit(SemesterFailure(failure.message)), (_) {
       emit(SemesterSuccess());
-      add(LoadSemestersEvent(courseId: event.semester.courseId));
+      add(LoadSemestersEvent(courseId: event.semester.courseId, collegeId: event.collegeId));
     });
   }
 
   FutureOr<void> _updateSemester(UpdateSemesterEvent event,
       Emitter<SemesterState> emit,) async {
     emit(SemesterLoading());
-    final result = await semesterRepository.updateSemester(event.semester);
+    final result = await semesterRepository.updateSemester(event.semester,event.collegeId);
     result.fold((failure) => emit(SemesterFailure(failure.message)), (_) {
       emit(SemesterSuccess());
-      add(LoadSemestersEvent(courseId: event.semester.courseId));
+      add(LoadSemestersEvent(courseId: event.semester.courseId,collegeId: event.collegeId));
     });
   }
 
   FutureOr<void> _loadCourses(LoadCoursesEvent event,
       Emitter<SemesterState> emit,) async {
     emit(SemesterLoading());
-    final result = await courseRepository.getCourses();
+    final result = await courseRepository.getCourses(event.collegeId);
     result.fold((failure) => emit(SemesterFailure(failure.message)), (
         courses) {
       emit(CoursesLoaded(courses));
@@ -62,7 +62,7 @@ class SemesterBloc extends Bloc<SemesterEvent, SemesterState> {
   FutureOr<void> _loadSemesters(LoadSemestersEvent event,
       Emitter<SemesterState> emit,) async {
     emit(SemesterLoading());
-    final result = await semesterRepository.getSemesters(event.courseId);
+    final result = await semesterRepository.getSemesters(event.courseId,event.collegeId);
     result.fold((failure) => emit(SemesterFailure(failure.message)), (
         semesters) {
       emit(SemestersLoaded(semesters));

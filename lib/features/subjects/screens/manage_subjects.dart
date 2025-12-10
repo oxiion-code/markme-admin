@@ -1,9 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:markme_admin/core/widgets/app_nav_bar.dart';
 import 'package:markme_admin/features/academic_structure/widgets/semester_widget/filter_semester_app_bar.dart';
-
+import 'package:markme_admin/features/onboarding/cubit/admin_user_cubit.dart';
 import '../../../core/utils/app_utils.dart';
 import '../../academic_structure/models/academic_batch.dart';
 import '../../academic_structure/models/branch.dart';
@@ -28,9 +27,10 @@ class _ManageSubjectsState extends State<ManageSubjects> {
   @override
   void initState() {
     super.initState();
-    context.read<SubjectBloc>().add(GetAllBranches());
+    final collegeId= context.read<AdminUserCubit>().state!.collegeId;
+    context.read<SubjectBloc>().add(LoadAllBranches(collegeId: collegeId));
   }
-  void _showBranchFilterSheet(BuildContext context) {
+  void _showBranchFilterSheet(BuildContext context,String collegeId) {
     if (branches == null || branches!.isEmpty) {
       AppUtils.showCustomSnackBar(context, "No branches available");
       return;
@@ -74,7 +74,7 @@ class _ManageSubjectsState extends State<ManageSubjects> {
                   });
 
                   context.read<SubjectBloc>().add(
-                    GetAllBatches(branch.branchId),
+                    LoadAllBatches(collegeId: collegeId,branchId: selectedBranch!.branchId),
                   );
                 },
               ),
@@ -88,7 +88,7 @@ class _ManageSubjectsState extends State<ManageSubjects> {
   // -----------------------------------------------------
   // SHOW ADD SUBJECT BOTTOM SHEET
   // -----------------------------------------------------
-  void _showAddSubjectSheet(BuildContext context) {
+  void _showAddSubjectSheet(BuildContext context,String collegeId) {
     if (branches == null || batches == null) {
       AppUtils.showCustomSnackBar(context, "Please wait, still loading...");
       return;
@@ -102,7 +102,7 @@ class _ManageSubjectsState extends State<ManageSubjects> {
           branches: branches!,
           batches: batches!,
           onAddSubjectClick: (subject) {
-            context.read<SubjectBloc>().add(AddSubjectEvent(subject));
+            context.read<SubjectBloc>().add(AddSubjectEvent(subject,collegeId));
           },
         );
       },
@@ -114,12 +114,13 @@ class _ManageSubjectsState extends State<ManageSubjects> {
   // -----------------------------------------------------
   @override
   Widget build(BuildContext context) {
+    final collegeId= context.read<AdminUserCubit>().state!.collegeId;
     return Scaffold(
       appBar: SemesterAppNavBar(
         title: selectedBranch == null
             ? "Manage Subjects"
             : "Manage Subjects (${selectedBranch!.branchName})",
-        onTap: () => _showBranchFilterSheet(context), // filter button
+        onTap: () => _showBranchFilterSheet(context,collegeId), // filter button
       ),
 
       floatingActionButton: FloatingActionButton.extended(
@@ -129,7 +130,7 @@ class _ManageSubjectsState extends State<ManageSubjects> {
           "Add Subject",
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
         ),
-        onPressed: () => _showAddSubjectSheet(context),
+        onPressed: () => _showAddSubjectSheet(context,collegeId),
       ),
 
       body: BlocConsumer<SubjectBloc, SubjectState>(
@@ -152,7 +153,7 @@ class _ManageSubjectsState extends State<ManageSubjects> {
               if (branches!.isNotEmpty) {
                 selectedBranch = branches!.first;
                 context.read<SubjectBloc>().add(
-                  GetAllBatches(branches!.first.branchId),
+                  LoadAllBatches( collegeId:collegeId , branchId: selectedBranch!.branchId),
                 );
               }
             });
@@ -160,7 +161,7 @@ class _ManageSubjectsState extends State<ManageSubjects> {
             setState(() {
               batches = state.batches;
             });
-            context.read<SubjectBloc>().add(GetAllSubjects());
+            context.read<SubjectBloc>().add(GetAllSubjects(collegeId: collegeId));
           }
         },
 
@@ -193,7 +194,7 @@ class _ManageSubjectsState extends State<ManageSubjects> {
                 return SubjectCard(
                   subject: subject,
                   onDelete: () {
-                    context.read<SubjectBloc>().add(DeleteSubjectEvent(subject));
+                    context.read<SubjectBloc>().add(DeleteSubjectEvent(subject,collegeId));
                   },
                 );
               },

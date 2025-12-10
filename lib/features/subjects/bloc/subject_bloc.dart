@@ -17,8 +17,8 @@ class SubjectBloc extends Bloc<SubjectEvent, SubjectState> {
     on<UpdateSubjectEvent>(_updateSubject);
     on<DeleteSubjectEvent>(_deleteSubject);
     on<GetAllSubjects>(_getAllSubjects);
-    on<GetAllBatches>(_getAllBatches);
-    on<GetAllBranches>(_getAllBranches);
+    on<LoadAllBatches>(_getAllBatches);
+    on<LoadAllBranches>(_getAllBranches);
   }
 
   FutureOr<void> _addSubject(
@@ -26,12 +26,12 @@ class SubjectBloc extends Bloc<SubjectEvent, SubjectState> {
     Emitter<SubjectState> emit,
   ) async {
     emit(SubjectLoading());
-    final result = await subjectRepository.addSubject(event.subject);
+    final result = await subjectRepository.addSubject(event.subject, event.collegeId);
     result.fold(
       (failure) => emit(SubjectError(failure.message)),
       (_) {
         emit(SubjectSuccess());
-        add(GetAllSubjects());
+        add(GetAllSubjects(collegeId: event.collegeId));
       },
     );
   }
@@ -41,12 +41,12 @@ class SubjectBloc extends Bloc<SubjectEvent, SubjectState> {
     Emitter<SubjectState> emit,
   ) async {
     emit(SubjectLoading());
-    final result = await subjectRepository.updateSubject(event.subject);
+    final result = await subjectRepository.updateSubject(event.subject,event.collegeId);
     result.fold(
       (failure) => emit(SubjectError(failure.message)),
       (_){
         emit(SubjectSuccess());
-        add(GetAllSubjects());
+        add(GetAllSubjects(collegeId: event.collegeId));
       },
     );
   }
@@ -56,12 +56,12 @@ class SubjectBloc extends Bloc<SubjectEvent, SubjectState> {
     Emitter<SubjectState> emit,
   ) async {
     emit(SubjectLoading());
-    final result = await subjectRepository.deleteSubject(event.subject);
+    final result = await subjectRepository.deleteSubject(event.subject,event.collegeId);
     result.fold(
       (failure) => emit(SubjectError(failure.message)),
       (_){
         emit(SubjectSuccess());
-        add(GetAllSubjects());
+        add(GetAllSubjects(collegeId: event.collegeId));
       } ,
     );
   }
@@ -71,7 +71,7 @@ class SubjectBloc extends Bloc<SubjectEvent, SubjectState> {
     Emitter<SubjectState> emit,
   ) async {
     emit(SubjectLoading());
-    final result = await subjectRepository.getSubjects();
+    final result = await subjectRepository.getSubjects(event.collegeId);
     result.fold(
       (failure) => emit(SubjectError(failure.message)),
       (subjects){
@@ -80,18 +80,18 @@ class SubjectBloc extends Bloc<SubjectEvent, SubjectState> {
     );
   }
 
-  FutureOr<void> _getAllBatches(GetAllBatches event, Emitter<SubjectState> emit) async {
+  FutureOr<void> _getAllBatches(LoadAllBatches event, Emitter<SubjectState> emit) async {
     emit(SubjectLoading());
-    final result = await batchRepository.getBatches(event.branchId);
+    final result = await batchRepository.getBatches(event.branchId,event.collegeId);
     result.fold(
           (failure) => emit(SubjectError(failure.message)),
           (batches) => emit(BatchesLoaded(batches)),
     );
   }
 
-  FutureOr<void> _getAllBranches(GetAllBranches event, Emitter<SubjectState> emit) async {
+  FutureOr<void> _getAllBranches(LoadAllBranches event, Emitter<SubjectState> emit) async {
     emit(SubjectLoading());
-    final result = await branchRepository.loadAllBranches();
+    final result = await branchRepository.loadAllBranches(event.collegeId);
     result.fold(
           (failure) => emit(SubjectError(failure.message)),
           (branches) => emit(BranchesLoaded(branches)),

@@ -10,9 +10,14 @@ class AcademicBatchRepositoryImpl extends AcademicBatchRepository {
   AcademicBatchRepositoryImpl(this._firestore);
 
   @override
-  Future<Either<AppFailure, Unit>> addBatch(AcademicBatch batch) async {
+  Future<Either<AppFailure, Unit>> addBatch(
+    AcademicBatch batch,
+    String collegeId,
+  ) async {
     try {
       await _firestore
+          .collection('academicBatches')
+          .doc(collegeId)
           .collection('academicBatches')
           .doc(batch.batchId)
           .set(batch.toMap());
@@ -23,9 +28,14 @@ class AcademicBatchRepositoryImpl extends AcademicBatchRepository {
   }
 
   @override
-  Future<Either<AppFailure, Unit>> deleteBatch(AcademicBatch batch) async {
+  Future<Either<AppFailure, Unit>> deleteBatch(
+    AcademicBatch batch,
+    String collegeId,
+  ) async {
     try {
       await _firestore
+          .collection('academicBatches')
+          .doc(collegeId)
           .collection('academicBatches')
           .doc(batch.batchId)
           .delete();
@@ -38,9 +48,12 @@ class AcademicBatchRepositoryImpl extends AcademicBatchRepository {
   @override
   Future<Either<AppFailure, List<AcademicBatch>>> getBatches(
     String branchId,
+    String collegeId,
   ) async {
     try {
       final snapshot = await _firestore
+          .collection('academicBatches')
+          .doc(collegeId)
           .collection('academicBatches')
           .where("branchId", isEqualTo: branchId)
           .get();
@@ -54,9 +67,14 @@ class AcademicBatchRepositoryImpl extends AcademicBatchRepository {
   }
 
   @override
-  Future<Either<AppFailure, Unit>> updateBatch(AcademicBatch batch) async {
+  Future<Either<AppFailure, Unit>> updateBatch(
+    AcademicBatch batch,
+    String collegeId,
+  ) async {
     try {
       await _firestore
+          .collection('academicBatches')
+          .doc(collegeId)
           .collection('academicBatches')
           .doc(batch.batchId)
           .update(batch.toMap());

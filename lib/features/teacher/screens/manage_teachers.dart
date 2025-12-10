@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:markme_admin/core/utils/app_utils.dart';
 import 'package:markme_admin/core/widgets/app_nav_bar.dart';
 import 'package:markme_admin/features/academic_structure/models/branch.dart';
+import 'package:markme_admin/features/onboarding/cubit/admin_user_cubit.dart';
 import 'package:markme_admin/features/teacher/bloc/teacher_bloc.dart';
 import 'package:markme_admin/features/teacher/bloc/teacher_event.dart';
 import 'package:markme_admin/features/teacher/bloc/teacher_state.dart';
@@ -26,10 +27,11 @@ class _ManageTeachersState extends State<ManageTeachers> {
   @override
   void initState() {
     super.initState();
-    context.read<TeacherBloc>().add(LoadBranchesForTeacherEvent());
+    final collegeId=context.read<AdminUserCubit>().state!.collegeId;
+    context.read<TeacherBloc>().add(LoadBranchesForTeacherEvent(collegeId: collegeId));
   }
 
-  void _openAddTeacherSheet() {
+  void _openAddTeacherSheet(String collegeId) {
     if (branches != null) {
       showModalBottomSheet(
         context: context,
@@ -46,7 +48,7 @@ class _ManageTeachersState extends State<ManageTeachers> {
             final currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
             context.read<TeacherBloc>().add(
               AddTeacherEvent(
-                Teacher(
+                teacher: Teacher(
                   teacherId: teacherId,
                   teacherName: name,
                   email: email,
@@ -62,6 +64,7 @@ class _ManageTeachersState extends State<ManageTeachers> {
                   totalPoints: "",
                   deviceToken: "",
                 ),
+                collegeId: collegeId
               ),
             );
           },
@@ -78,10 +81,11 @@ class _ManageTeachersState extends State<ManageTeachers> {
 
   @override
   Widget build(BuildContext context) {
+    final String collegeId= context.read<AdminUserCubit>().state!.collegeId;
     return Scaffold(
       appBar: CustomAppNavBar(
         title: "Manage Teachers",
-        onTap: _openAddTeacherSheet,
+        onTap: ()=>_openAddTeacherSheet(collegeId),
       ),
       
       body: BlocConsumer<TeacherBloc, TeacherState>(
@@ -98,7 +102,7 @@ class _ManageTeachersState extends State<ManageTeachers> {
             setState(() {
               branches = state.branches;
             });
-            context.read<TeacherBloc>().add(LoadTeachersEvent());
+            context.read<TeacherBloc>().add(LoadTeachersEvent(collegeId: collegeId));
           } else if (state is TeacherError) {
             AppUtils.showCustomSnackBar(context, state.message);
           }
@@ -190,7 +194,7 @@ class _ManageTeachersState extends State<ManageTeachers> {
                         onDelete: () => AppUtils.showDeleteConfirmation(
                           context: context,
                           onConfirmDelete: () {
-                            context.read<TeacherBloc>().add(DeleteTeacherEvent(teacher));
+                            context.read<TeacherBloc>().add(DeleteTeacherEvent(teacher: teacher,collegeId: collegeId));
                           },
                         ),
                       );

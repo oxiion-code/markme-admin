@@ -9,24 +9,35 @@ class TeacherEvent extends Equatable{
 }
 class AddTeacherEvent extends TeacherEvent{
   final Teacher teacher ;
-  const AddTeacherEvent(this.teacher);
+  final String collegeId;
+  const AddTeacherEvent({required this.collegeId, required this.teacher});
 }
 
 class UpdateTeacherEvent extends TeacherEvent{
   final Teacher teacher;
-  const UpdateTeacherEvent(this.teacher);
+  final String collegeId;
+  const UpdateTeacherEvent({required this.teacher, required this.collegeId});
   @override
-  // TODO: implement props
   List<Object?> get props => [teacher];
 }
 
 class DeleteTeacherEvent extends TeacherEvent{
   final Teacher teacher;
-  const DeleteTeacherEvent(this.teacher);
+  final String collegeId;
+  const DeleteTeacherEvent({required this.teacher, required this.collegeId});
   @override
-  // TODO: implement props
   List<Object?> get props => [teacher];
 }
 
-class LoadTeachersEvent extends TeacherEvent{}
-class LoadBranchesForTeacherEvent extends TeacherEvent{}
+class LoadTeachersEvent extends TeacherEvent{
+  final String collegeId;
+  const LoadTeachersEvent({required this.collegeId});
+  @override
+  List<Object?> get props => [collegeId];
+}
+class LoadBranchesForTeacherEvent extends TeacherEvent{
+  final String collegeId;
+  const LoadBranchesForTeacherEvent({required this.collegeId});
+  @override
+  List<Object?> get props => [collegeId];
+}

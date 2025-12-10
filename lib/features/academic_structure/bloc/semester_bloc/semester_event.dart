@@ -8,30 +8,38 @@ abstract class SemesterEvent extends Equatable{
 }
 class AddNewSemesterEvent extends SemesterEvent{
   final Semester semester;
-  const AddNewSemesterEvent(this.semester);
+  final String collegeId;
+  const AddNewSemesterEvent(this.semester,this.collegeId);
   @override
-  List<Object?> get props => [semester];
+  List<Object?> get props => [semester,collegeId];
 }
 
 class UpdateSemesterEvent extends SemesterEvent{
   final Semester semester;
-  const UpdateSemesterEvent(this.semester);
+  final String collegeId;
+  const UpdateSemesterEvent(this.semester,this.collegeId);
   @override
-  List<Object?> get props => [semester];
+  List<Object?> get props => [semester,collegeId];
 }
 
 class DeleteSemesterEvent extends SemesterEvent{
   final Semester semester;
-  const DeleteSemesterEvent(this.semester);
+  final String collegeId;
+  const DeleteSemesterEvent(this.semester, this.collegeId);
   @override
-  List<Object?> get props => [semester];
+  List<Object?> get props => [semester,collegeId];
 }
 
 class LoadCoursesEvent extends SemesterEvent{
+  final String collegeId;
+  const LoadCoursesEvent({required this.collegeId});
+  @override
+  List<Object?> get props => [collegeId];
 }
 class LoadSemestersEvent extends SemesterEvent{
   final String courseId;
-  const LoadSemestersEvent({required this.courseId});
+  final String collegeId;
+  const LoadSemestersEvent({required this.courseId,required this.collegeId});
   @override
   List<Object?> get props => [courseId];
 }

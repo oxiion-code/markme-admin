@@ -9,9 +9,11 @@ class SemesterRepositoryImpl extends SemesterRepository {
   SemesterRepositoryImpl(this._firestore);
 
   @override
-  Future<Either<AppFailure, Unit>> addSemester(Semester semester) async {
+  Future<Either<AppFailure, Unit>> addSemester(Semester semester,String collegeId) async {
     try {
       await _firestore
+          .collection('semesters')
+          .doc(collegeId)
           .collection('semesters')
           .doc(semester.semesterId)
           .set(semester.toMap());
@@ -22,9 +24,11 @@ class SemesterRepositoryImpl extends SemesterRepository {
   }
 
   @override
-  Future<Either<AppFailure, Unit>> deleteSemester(Semester semester) async {
+  Future<Either<AppFailure, Unit>> deleteSemester(Semester semester,String collegeId) async {
     try {
       await _firestore
+          .collection('semesters')
+          .doc(collegeId)
           .collection('semesters')
           .doc(semester.semesterId)
           .delete();
@@ -37,9 +41,12 @@ class SemesterRepositoryImpl extends SemesterRepository {
   @override
   Future<Either<AppFailure, List<Semester>>> getSemesters(
     String courseId,
+      String collegeId
   ) async {
     try {
       final snapshot = await _firestore
+          .collection('semesters')
+          .doc(collegeId)
           .collection('semesters')
           .where("courseId", isEqualTo: courseId)
           .get();
@@ -53,9 +60,11 @@ class SemesterRepositoryImpl extends SemesterRepository {
   }
 
   @override
-  Future<Either<AppFailure, Unit>> updateSemester(Semester semester) async {
+  Future<Either<AppFailure, Unit>> updateSemester(Semester semester,String collegeId) async {
     try {
       await _firestore
+          .collection('semesters')
+          .doc(collegeId)
           .collection('semesters')
           .doc(semester.semesterId)
           .update(semester.toMap());

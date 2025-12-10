@@ -10,6 +10,8 @@ import 'package:markme_admin/features/academic_structure/models/branch.dart';
 import 'package:markme_admin/features/academic_structure/models/section.dart';
 import 'package:markme_admin/features/teacher/models/teacher.dart';
 
+import '../../../onboarding/cubit/admin_user_cubit.dart';
+
 class AddSectionBottomSheet extends StatefulWidget {
   final List<Branch> branches;
   final Function(Section) onAddSectionClick;
@@ -35,10 +37,12 @@ class _AddSectionBottomSheetState extends State<AddSectionBottomSheet> {
   List<AcademicBatch> loadedBatches = [];
   List<Teacher> loadedTeachers = [];
 
+
   final TextEditingController nameController = TextEditingController();
   final TextEditingController defaultRoomController = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    final collegeId=context.read<AdminUserCubit>().state!.collegeId;
     return BlocListener<SectionBloc, SectionState>(
       listener: (context, state) {
         if (state is BatchesLoaded) {
@@ -89,7 +93,7 @@ class _AddSectionBottomSheetState extends State<AddSectionBottomSheet> {
                     loadedTeachers.clear();
                   });
                   context.read<SectionBloc>().add(
-                    LoadAllBatchesEvent(branchId: selectedBranchId!),
+                    LoadAllBatchesEvent(branchId: selectedBranchId!, collegeId: collegeId),
                   );
                 },
               ),
@@ -112,7 +116,7 @@ class _AddSectionBottomSheetState extends State<AddSectionBottomSheet> {
                     selectedBatchId = value!;
                   });
                   context.read<SectionBloc>().add(
-                    LoadTeachersForSection(branchId: selectedBranchId!),
+                    LoadTeachersForSection(branchId: selectedBranchId!,collegeId: collegeId),
                   );
                 },
               ),

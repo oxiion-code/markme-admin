@@ -9,9 +9,11 @@ class SectionRepositoryImpl extends SectionRepository {
   SectionRepositoryImpl(this._firestore);
 
   @override
-  Future<Either<AppFailure, Unit>> addSection(Section section) async {
+  Future<Either<AppFailure, Unit>> addSection(Section section,String collegeId) async {
     try {
       await _firestore
+          .collection('sections')
+          .doc(collegeId)
           .collection('sections')
           .doc(section.sectionId)
           .set(section.toMap());
@@ -22,9 +24,13 @@ class SectionRepositoryImpl extends SectionRepository {
   }
 
   @override
-  Future<Either<AppFailure, Unit>> deleteSection(Section section) async {
+  Future<Either<AppFailure, Unit>> deleteSection(Section section,String collegeId) async {
     try {
-      await _firestore.collection('sections').doc(section.sectionId).delete();
+      await _firestore
+          .collection('sections')
+          .doc(collegeId)
+          .collection('sections')
+          .doc(section.sectionId).delete();
       return Right(unit);
     } catch (e) {
       return Left(AppFailure(message: e.toString()));
@@ -34,9 +40,12 @@ class SectionRepositoryImpl extends SectionRepository {
   @override
   Future<Either<AppFailure, List<Section>>> getAllSections(
     String branchId,
+      String collegeId
   ) async {
     try {
       final snapshot = await _firestore
+          .collection('sections')
+          .doc(collegeId)
           .collection('sections')
           .where("branchId", isEqualTo: branchId)
           .get();
@@ -50,9 +59,11 @@ class SectionRepositoryImpl extends SectionRepository {
   }
 
   @override
-  Future<Either<AppFailure, Unit>> updateSection(Section section) async {
+  Future<Either<AppFailure, Unit>> updateSection(Section section,String collegeId) async {
     try {
       await _firestore
+          .collection('sections')
+          .doc(collegeId)
           .collection('sections')
           .doc(section.sectionId)
           .update(section.toMap());
