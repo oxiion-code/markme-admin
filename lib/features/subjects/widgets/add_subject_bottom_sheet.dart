@@ -27,6 +27,7 @@ class _AddSubjectBottomSheetState extends State<AddSubjectBottomSheet> {
   String? selectedBranchId;
   String? selectedBatchId;
   String? selectedType;
+
   final TextEditingController nameController = TextEditingController();
   final TextEditingController subjectCodeController = TextEditingController();
 
@@ -99,15 +100,17 @@ class _AddSubjectBottomSheetState extends State<AddSubjectBottomSheet> {
             ),
             const SizedBox(height: 16),
 
-            // Subject Name Field
+            // Subject Code Field  **FIXED**
             CustomTextbox(
-              controller: nameController,
-              icon: Icons.book_outlined,
+              controller: subjectCodeController,
+              icon: Icons.code,
               hint: 'Enter subject code',
             ),
             const SizedBox(height: 20),
+
+            // Subject Type Dropdown
             DropdownButtonFormField<String>(
-              initialValue: selectedType,
+              value: selectedType,
               hint: const Text("Select Subject Type"),
               items: const [
                 DropdownMenuItem(value: "Theory", child: Text("Theory")),
@@ -123,12 +126,15 @@ class _AddSubjectBottomSheetState extends State<AddSubjectBottomSheet> {
                 labelText: "Subject Type",
               ),
             ),
+
             const SizedBox(height: 20),
+
             Center(
               child: ElevatedButton(
                 onPressed: () {
                   final name = nameController.text.trim();
                   final subjectCode = subjectCodeController.text.trim();
+
                   if (selectedBranchId != null &&
                       selectedBatchId != null &&
                       name.isNotEmpty &&
@@ -137,7 +143,7 @@ class _AddSubjectBottomSheetState extends State<AddSubjectBottomSheet> {
                     widget.onAddSubjectClick(
                       Subject(
                         subjectId:
-                            "${selectedBranchId}_${selectedBatchId}_$name",
+                        "${selectedBranchId}_${selectedBatchId}_$name",
                         subjectName: name,
                         branchId: selectedBranchId!,
                         batchId: selectedBatchId!,
@@ -145,11 +151,12 @@ class _AddSubjectBottomSheetState extends State<AddSubjectBottomSheet> {
                         subjectType: selectedType!,
                       ),
                     );
+
                     Navigator.pop(context);
                   } else {
                     AppUtils.showDialogMessage(
                       context,
-                      "Please select batch, branch, and enter subject name.",
+                      "Please select batch, branch, and enter all details.",
                       "Missing Information",
                     );
                   }

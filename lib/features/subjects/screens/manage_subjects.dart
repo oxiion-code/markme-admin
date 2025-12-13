@@ -20,8 +20,8 @@ class ManageSubjects extends StatefulWidget {
 }
 
 class _ManageSubjectsState extends State<ManageSubjects> {
-  List<Branch>? branches;
-  List<AcademicBatch>? batches;
+  List<Branch> branches=[];
+  List<AcademicBatch> batches=[];
   Branch? selectedBranch;
 
   @override
@@ -31,7 +31,7 @@ class _ManageSubjectsState extends State<ManageSubjects> {
     context.read<SubjectBloc>().add(LoadAllBranches(collegeId: collegeId));
   }
   void _showBranchFilterSheet(BuildContext context,String collegeId) {
-    if (branches == null || branches!.isEmpty) {
+    if (branches.isEmpty) {
       AppUtils.showCustomSnackBar(context, "No branches available");
       return;
     }
@@ -58,7 +58,7 @@ class _ManageSubjectsState extends State<ManageSubjects> {
             ),
             const SizedBox(height: 16),
 
-            ...branches!.map(
+            ...branches.map(
                   (branch) => ListTile(
                 leading: Icon(
                   selectedBranch?.branchId == branch.branchId
@@ -72,7 +72,6 @@ class _ManageSubjectsState extends State<ManageSubjects> {
                   setState(() {
                     selectedBranch = branch;
                   });
-
                   context.read<SubjectBloc>().add(
                     LoadAllBatches(collegeId: collegeId,branchId: selectedBranch!.branchId),
                   );
@@ -89,7 +88,7 @@ class _ManageSubjectsState extends State<ManageSubjects> {
   // SHOW ADD SUBJECT BOTTOM SHEET
   // -----------------------------------------------------
   void _showAddSubjectSheet(BuildContext context,String collegeId) {
-    if (branches == null || batches == null) {
+    if (branches.isEmpty || batches.isEmpty) {
       AppUtils.showCustomSnackBar(context, "Please wait, still loading...");
       return;
     }
@@ -99,8 +98,8 @@ class _ManageSubjectsState extends State<ManageSubjects> {
       isScrollControlled: true,
       builder: (_) {
         return AddSubjectBottomSheet(
-          branches: branches!,
-          batches: batches!,
+          branches: branches,
+          batches: batches,
           onAddSubjectClick: (subject) {
             context.read<SubjectBloc>().add(AddSubjectEvent(subject,collegeId));
           },
@@ -108,10 +107,6 @@ class _ManageSubjectsState extends State<ManageSubjects> {
       },
     );
   }
-
-  // -----------------------------------------------------
-  // MAIN UI
-  // -----------------------------------------------------
   @override
   Widget build(BuildContext context) {
     final collegeId= context.read<AdminUserCubit>().state!.collegeId;
@@ -150,10 +145,10 @@ class _ManageSubjectsState extends State<ManageSubjects> {
           if (state is BranchesLoaded) {
             setState(() {
               branches = state.branches;
-              if (branches!.isNotEmpty) {
-                selectedBranch = branches!.first;
+              if (branches.isNotEmpty) {
+                selectedBranch = branches.first;
                 context.read<SubjectBloc>().add(
-                  LoadAllBatches( collegeId:collegeId , branchId: selectedBranch!.branchId),
+                  LoadAllBatches( collegeId:collegeId , branchId: branches.first.branchId),
                 );
               }
             });
@@ -161,7 +156,11 @@ class _ManageSubjectsState extends State<ManageSubjects> {
             setState(() {
               batches = state.batches;
             });
-            context.read<SubjectBloc>().add(GetAllSubjects(collegeId: collegeId));
+            if(selectedBranch!=null){
+              context.read<SubjectBloc>().add(GetAllSubjects(collegeId: collegeId,branchId: selectedBranch!.branchId));
+            }else{
+              AppUtils.showCustomSnackBar(context, "Branch is not selected");
+            }
           }
         },
 
@@ -200,7 +199,7 @@ class _ManageSubjectsState extends State<ManageSubjects> {
               },
             );
           }
-          return const Center(child: CircularProgressIndicator());
+          return const Center();
         },
       ),
     );

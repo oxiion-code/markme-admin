@@ -48,22 +48,6 @@ class _EditBranchBottomSheetState extends State<EditBranchBottomSheet> {
             "Edit Branch",
             style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
           ),
-          const SizedBox(height: 20),
-          DropdownButton<String>(
-            value: selectedText,
-            hint: Text('Select a Course'),
-            items: widget.courses.map((course) {
-              return DropdownMenuItem<String>(
-                value: course.courseId,
-                child: Text(course.courseName),
-              );
-            }).toList(),
-            onChanged: (value) {
-              setState(() {
-                selectedText = value!;
-              });
-            },
-          ),
           const SizedBox(height: 10),
           CustomTextbox(
             controller: nameController,

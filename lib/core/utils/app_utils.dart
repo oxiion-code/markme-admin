@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:markme_admin/core/widgets/loading.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AppUtils{
   static void showCustomSnackBar(BuildContext context, String message, {bool isError = false}) {
@@ -46,7 +47,18 @@ class AppUtils{
       child: Loading(),
     ));
   }
-
+  static Future<void> saveCollegeId(String collegeId) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('college_id', collegeId);
+  }
+  static Future<String?> getCollegeId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('college_id');
+  }
+  static Future<void> deleteCollegeId(String collegeIdKey) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(collegeIdKey);
+  }
   static void showDialogMessage(BuildContext context,String message,String title){
     showDialog(context: context, builder: (context)=>AlertDialog(
       title:Text(title) ,

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:markme_admin/core/utils/app_utils.dart';
 import 'package:markme_admin/features/academic_structure/bloc/branch_bloc/branch_bloc.dart';
 import 'package:markme_admin/features/academic_structure/bloc/branch_bloc/branch_event.dart';
@@ -10,6 +11,7 @@ import 'package:markme_admin/features/academic_structure/widgets/branch_widgets/
 import 'package:markme_admin/features/academic_structure/widgets/branch_widgets/branch_container.dart';
 import 'package:markme_admin/features/academic_structure/widgets/branch_widgets/edit_branch_bottom_sheet.dart';
 import 'package:markme_admin/core/theme/color_scheme.dart';
+import 'package:markme_admin/features/academic_structure/screens/branch/seat_allocation_list_screen.dart';
 import 'package:markme_admin/features/onboarding/cubit/admin_user_cubit.dart';
 
 class ManageBranches extends StatefulWidget {
@@ -141,7 +143,6 @@ class _ManageBranchesState extends State<ManageBranches> {
                 ),
               );
             }
-
             return Padding(
               padding: const EdgeInsets.all(16),
               child: ListView.builder(
@@ -152,6 +153,9 @@ class _ManageBranchesState extends State<ManageBranches> {
                     branch: branch,
                     onDelete: () {
                       context.read<BranchBloc>().add(DeleteBranchEvent(branch: branch,collegeId: collegeId));
+                    },
+                    onTap: (){
+                      context.push('/seatAllocation', extra: branch);
                     },
                     onEdit: () {
                       showModalBottomSheet(

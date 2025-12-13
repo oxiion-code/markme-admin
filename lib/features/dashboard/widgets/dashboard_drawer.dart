@@ -90,6 +90,14 @@ class DashboardDrawer extends StatelessWidget {
             },
           ),
           ListTile(
+            leading: Icon(Icons.plagiarism),
+            title: const Text('Manage Placement'),
+            onTap: () {
+              context.pop();
+              context.push('/managePlacement');
+            },
+          ),
+          ListTile(
             leading: Icon(Icons.book),
             title: const Text('Manage Subjects'),
             onTap: () {

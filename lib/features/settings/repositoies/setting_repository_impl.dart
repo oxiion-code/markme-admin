@@ -26,7 +26,7 @@ class SettingRepositoryImpl extends SettingRepository{
         if(imageUrl!=null) 'profilePhotoUrl':imageUrl
       };
 
-      await firestore.collection('users').doc(adminUser.uid).update(updatedData);
+      await firestore.collection('admins').doc(adminUser.uid).update(updatedData);
       final updatedAdminUser= adminUser.copyWith(
           profilePhotoUrl: imageUrl??adminUser.profilePhotoUrl
       );

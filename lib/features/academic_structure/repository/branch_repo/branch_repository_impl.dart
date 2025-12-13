@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 import 'package:markme_admin/core/error/failure.dart';
 import 'package:markme_admin/features/academic_structure/models/branch.dart';
+import 'package:markme_admin/features/academic_structure/models/branch_seat_allocation.dart';
 import 'package:markme_admin/features/academic_structure/repository/branch_repo/branch_repository.dart';
 
 class BranchRepositoryImpl extends BranchRepository {
@@ -32,7 +33,8 @@ class BranchRepositoryImpl extends BranchRepository {
     String collegeId,
   ) async {
     try {
-      await _firestore.collection('branches')
+      await _firestore
+          .collection('branches')
           .doc(collegeId)
           .collection("branches")
           .doc(branch.branchId)
@@ -48,7 +50,8 @@ class BranchRepositoryImpl extends BranchRepository {
     String collegeId,
   ) async {
     try {
-      final snapshot = await _firestore.collection('branches')
+      final snapshot = await _firestore
+          .collection('branches')
           .doc(collegeId)
           .collection("branches")
           .get();
@@ -73,6 +76,79 @@ class BranchRepositoryImpl extends BranchRepository {
           .collection("branches")
           .doc(branch.branchId)
           .update(branch.toMap());
+      return Right(unit);
+    } catch (e) {
+      return Left(AppFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<AppFailure, Unit>> addBranchSeats(
+    BranchSeatAllocation branchSeatAllocation,
+    String collegeId,
+  ) async {
+    try {
+      await _firestore
+          .collection("seat_allocation")
+          .doc(collegeId)
+          .collection("seat_allocation")
+          .doc(branchSeatAllocation.allocationId)
+          .set(branchSeatAllocation.toMap());
+      return Right(unit);
+    } catch (e) {
+      return Left(AppFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<AppFailure, Unit>> deleteSeatAllocation(
+    BranchSeatAllocation branchSeatAllocation,
+    String collegeId,
+  ) async {
+    try {
+      _firestore
+          .collection("seat_allocation")
+          .doc(collegeId)
+          .collection("seat_allocation")
+          .doc(branchSeatAllocation.allocationId)
+          .delete();
+      return Right(unit);
+    } catch (e) {
+      return Left(AppFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<AppFailure, List<BranchSeatAllocation>>>
+  loadBranchSeatAllocations(String collegeId, String branchId) async {
+    try {
+      final snapshot = await _firestore
+          .collection("seat_allocation")
+          .doc(collegeId)
+          .collection("seat_allocation")
+          .where("branchId", isEqualTo: branchId)
+          .get();
+      final branchSeatAllocations = snapshot.docs
+          .map((d) => BranchSeatAllocation.fromMap(d.data()))
+          .toList();
+      return Right(branchSeatAllocations);
+    } catch (e) {
+      return Left(AppFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<AppFailure, Unit>> updateSeatAllocation(
+    BranchSeatAllocation branchSeatAllocation,
+    String collegeId,
+  ) async {
+    try {
+      await _firestore
+          .collection("seat_allocation")
+          .doc(collegeId)
+          .collection("seat_allocation")
+          .doc(branchSeatAllocation.allocationId)
+          .update(branchSeatAllocation.toMap());
       return Right(unit);
     } catch (e) {
       return Left(AppFailure(message: e.toString()));

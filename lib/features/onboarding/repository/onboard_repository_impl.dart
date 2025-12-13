@@ -26,7 +26,7 @@ class OnboardRepositoryImpl extends OnboardRepository {
       final uid = user.uid;
 
       final collegeRef = firestore.collection('collegeList').doc(collegeId);
-      final userRef = firestore.collection('users').doc(uid);
+      final userRef = firestore.collection('admins').doc(uid);
 
       final collegeSnapshot = await collegeRef.get();
 

@@ -6,12 +6,14 @@ import 'package:markme_admin/features/academic_structure/bloc/branch_bloc/branch
 import 'package:markme_admin/features/academic_structure/bloc/course_bloc/course_bloc.dart';
 import 'package:markme_admin/features/academic_structure/bloc/section_bloc/section_bloc.dart';
 import 'package:markme_admin/features/academic_structure/bloc/semester_bloc/semester_bloc.dart';
+import 'package:markme_admin/features/academic_structure/models/branch.dart';
 import 'package:markme_admin/features/academic_structure/screens/manage_academic_structure_screen.dart';
 import 'package:markme_admin/features/academic_structure/screens/manage_batches.dart';
-import 'package:markme_admin/features/academic_structure/screens/manage_branches.dart';
+import 'package:markme_admin/features/academic_structure/screens/branch/manage_branches.dart';
 import 'package:markme_admin/features/academic_structure/screens/manage_courses.dart';
 import 'package:markme_admin/features/academic_structure/screens/manage_sections.dart';
 import 'package:markme_admin/features/academic_structure/screens/manage_semesters.dart';
+import 'package:markme_admin/features/academic_structure/screens/branch/seat_allocation_list_screen.dart';
 import 'package:markme_admin/features/attendance/bloc/attendance_bloc.dart';
 import 'package:markme_admin/features/attendance/screens/current_session_attendance_screen.dart';
 import 'package:markme_admin/features/auth/models/auth_info.dart';
@@ -27,6 +29,11 @@ import 'package:markme_admin/features/onboarding/screens/personal_info_screen.da
 import 'package:markme_admin/features/onboarding/screens/select_college_screen.dart';
 import 'package:markme_admin/features/permissions/screens/manage_permissions_screen.dart';
 import 'package:markme_admin/features/permissions/screens/student_permissions_screen.dart';
+import 'package:markme_admin/features/placement/blocs/company/company_bloc.dart';
+import 'package:markme_admin/features/placement/blocs/session/session_bloc.dart';
+import 'package:markme_admin/features/placement/models/company/company_details.dart';
+import 'package:markme_admin/features/placement/screens/company_detail_screen.dart';
+import 'package:markme_admin/features/placement/screens/placement_dashboard_screen.dart';
 import 'package:markme_admin/features/settings/bloc/setting_bloc.dart';
 import 'package:markme_admin/features/settings/screens/update_admin_screen.dart';
 import 'package:markme_admin/features/subjects/bloc/subject_bloc.dart';
@@ -35,6 +42,8 @@ import 'package:markme_admin/features/teacher/bloc/teacher_bloc.dart';
 import 'package:markme_admin/features/teacher/screens/manage_teachers.dart';
 
 import '../features/auth/screens/splash_screen.dart';
+import '../features/placement/screens/add_company_screen.dart';
+import '../features/placement/screens/add_placement_session_screen.dart';
 import '../features/settings/screens/setting_screen.dart';
 
 final GoRouter appRouter = GoRouter(
@@ -221,6 +230,66 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) {
         final admin = state.extra as AdminUser;
         return StudentPermissionScreen();
+      },
+    ),
+    GoRoute(
+      path: '/seatAllocation',
+      builder: (context, state) {
+        final branch = state.extra as Branch;
+        return BlocProvider(
+          create: (_) => BranchBloc(sl(), sl()),
+          child: SeatAllocationListScreen(branch: branch),
+        );
+      },
+    ),
+    GoRoute(
+      path: '/managePlacement',
+      builder: (context, state) {
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (_) => CompanyBloc(repository: sl())),
+            // Add more BlocProviders here if needed
+          ],
+          child: PlacementDashboardScreen(),
+        );
+      },
+    ),
+    GoRoute(
+      path: '/addOrModifyCompany',
+      builder: (context, state) {
+        final collegeId = state.extra as String;
+        return BlocProvider(
+          create: (_) => CompanyBloc(repository: sl()),
+          child: AddCompanyScreen(collegeId: collegeId),
+        );
+      },
+    ),
+    GoRoute(
+      path: '/companyDetails',
+      builder: (context, state) {
+        final companyDetails = state.extra as CompanyDetails;
+        return BlocProvider(
+          create: (_) => CompanyBloc(repository: sl()),
+          child: CompanyDetailsScreen(
+            company: companyDetails.company,
+            collegeId: companyDetails.collegeId,
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      path: '/addPlacementSession',
+      builder: (context, state) {
+        final companyDetails = state.extra as CompanyDetails;
+        return BlocProvider(
+          create: (_) => PlacementSessionBloc(
+            repository: sl(),
+            courseRepository: sl(),
+            branchRepository: sl(),
+            batchRepository: sl(),
+          ),
+          child: AddPlacementSessionScreen(companyDetails: companyDetails),
+        );
       },
     ),
   ],

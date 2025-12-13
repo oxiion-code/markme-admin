@@ -8,7 +8,7 @@ abstract class AuthEvent extends Equatable{
 }
 
 class CheckAuthStatus extends AuthEvent{
-
+  const CheckAuthStatus();
 }
 class LogoutRequested extends AuthEvent{
 

@@ -37,11 +37,11 @@ class SubjectRepositoryImpl extends SubjectRepository{
   }
 
   @override
-  Future<Either<AppFailure, List<Subject>>> getSubjects(String collegeId) async{
+  Future<Either<AppFailure, List<Subject>>> getSubjects(String collegeId,String branchId) async{
      try{
        final snapshot= await _firestore .collection('subjects')
            .doc(collegeId)
-           .collection("subjects")
+           .collection("subjects").where("branchId", isEqualTo: branchId)
           .get();
        final subjects=snapshot.docs.map((subject)=>Subject.fromMap(subject.data())).toList();
        return Right(subjects);

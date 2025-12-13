@@ -31,7 +31,7 @@ class SubjectBloc extends Bloc<SubjectEvent, SubjectState> {
       (failure) => emit(SubjectError(failure.message)),
       (_) {
         emit(SubjectSuccess());
-        add(GetAllSubjects(collegeId: event.collegeId));
+        add(GetAllSubjects(collegeId: event.collegeId,branchId: event.subject.branchId));
       },
     );
   }
@@ -46,7 +46,7 @@ class SubjectBloc extends Bloc<SubjectEvent, SubjectState> {
       (failure) => emit(SubjectError(failure.message)),
       (_){
         emit(SubjectSuccess());
-        add(GetAllSubjects(collegeId: event.collegeId));
+        add(GetAllSubjects(collegeId: event.collegeId,branchId: event.subject.branchId));
       },
     );
   }
@@ -61,7 +61,7 @@ class SubjectBloc extends Bloc<SubjectEvent, SubjectState> {
       (failure) => emit(SubjectError(failure.message)),
       (_){
         emit(SubjectSuccess());
-        add(GetAllSubjects(collegeId: event.collegeId));
+        add(GetAllSubjects(collegeId: event.collegeId,branchId: event.subject.branchId));
       } ,
     );
   }
@@ -71,7 +71,7 @@ class SubjectBloc extends Bloc<SubjectEvent, SubjectState> {
     Emitter<SubjectState> emit,
   ) async {
     emit(SubjectLoading());
-    final result = await subjectRepository.getSubjects(event.collegeId);
+    final result = await subjectRepository.getSubjects(event.collegeId,event.branchId);
     result.fold(
       (failure) => emit(SubjectError(failure.message)),
       (subjects){

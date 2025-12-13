@@ -73,7 +73,7 @@ class SubjectCard extends StatelessWidget {
                             .join(" ")
                             .toUpperCase(),
                         color: theme.primaryColorDark,
-                        label: "Branch",
+                        label: "Batch",
                       ),
                     ],
                   ),

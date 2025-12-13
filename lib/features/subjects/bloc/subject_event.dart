@@ -31,7 +31,8 @@ class DeleteSubjectEvent extends SubjectEvent{
 
 class GetAllSubjects extends SubjectEvent{
   final String collegeId;
-  const GetAllSubjects({required this.collegeId});
+  final String branchId;
+  const GetAllSubjects({required this.collegeId,required this.branchId});
   @override
   // TODO: implement props
   List<Object?> get props => [collegeId];

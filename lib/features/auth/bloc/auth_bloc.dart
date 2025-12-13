@@ -83,7 +83,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
     final uid=currentUser.uid;
     final phoneNumber=currentUser.phoneNumber??"";
-    final result = await authRepository.getUserdata(uid: currentUser.uid);
+    final result = await authRepository.getUserdata(uid: currentUser.uid,);
     result.fold(
       (failure) {
         if(failure.message=='User does not exist'){

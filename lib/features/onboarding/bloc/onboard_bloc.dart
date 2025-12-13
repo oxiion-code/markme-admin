@@ -29,6 +29,7 @@ class OnboardBloc extends Bloc<OnboardEvent, OnboardState> {
         emit(OnboardError(failure.message));
       },
       (adminUser) {
+
         emit(OnboardSuccess(adminUser));
       },
     );

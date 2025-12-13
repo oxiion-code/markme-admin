@@ -59,6 +59,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
           }
           if (state is OnboardSuccess) {
             context.read<AdminUserCubit>().setUser(state.user);
+            AppUtils.saveCollegeId(state.user.collegeId);
             context.go('/dashboardScreen', extra: state.user);
           } else if (state is OnboardError) {
             context.read<AuthBloc>().add(LogoutRequested());

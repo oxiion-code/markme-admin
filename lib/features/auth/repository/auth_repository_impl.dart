@@ -65,7 +65,7 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<Either<AppFailure, AdminUser>> getUserdata({required String uid}) async {
    try{
-     final doc=await FirebaseFirestore.instance.collection('users').doc(uid).get();
+     final doc=await FirebaseFirestore.instance.collection('admins').doc(uid).get();
      if(!doc.exists){
        return Left(AppFailure(message: 'User does not exist'));
      }

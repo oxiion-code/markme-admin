@@ -29,6 +29,12 @@ import 'package:markme_admin/features/classes/repository/class_repository.dart';
 import 'package:markme_admin/features/classes/repository/class_repository_impl.dart';
 import 'package:markme_admin/features/onboarding/repository/onboard_repository.dart';
 import 'package:markme_admin/features/onboarding/repository/onboard_repository_impl.dart';
+import 'package:markme_admin/features/placement/blocs/company/company_bloc.dart';
+import 'package:markme_admin/features/placement/blocs/session/session_bloc.dart';
+import 'package:markme_admin/features/placement/repositories/company/company_repository.dart';
+import 'package:markme_admin/features/placement/repositories/company/company_repository_impl.dart';
+import 'package:markme_admin/features/placement/repositories/session/placement_session_repository.dart';
+import 'package:markme_admin/features/placement/repositories/session/placement_session_repository_impl.dart';
 import 'package:markme_admin/features/settings/bloc/setting_bloc.dart';
 import 'package:markme_admin/features/settings/repositoies/setting_repository.dart';
 import 'package:markme_admin/features/settings/repositoies/setting_repository_impl.dart';
@@ -64,6 +70,8 @@ Future<void> init() async{
   sl.registerLazySingleton<ClassRepository>(()=>ClassRepositoryImpl(sl()));
   sl.registerLazySingleton<AttendanceRepository>(()=>AttendanceRepositoryImpl(firestore: sl()));
   sl.registerLazySingleton<SettingRepository>(()=>SettingRepositoryImpl(sl(), sl()));
+  sl.registerLazySingleton<CompanyRepository>(()=>CompanyRepositoryImpl(firestore: sl(), storage: sl()));
+  sl.registerLazySingleton<PlacementSessionRepository>(()=>PlacementSessionRepositoryImpl(firestore: sl()));
 
   //blocs
   sl.registerFactory<AuthBloc>(()=>AuthBloc(sl()));
@@ -77,4 +85,6 @@ Future<void> init() async{
   sl.registerFactory<CurrentSessionBloc>(()=>CurrentSessionBloc(repository: sl()));
   sl.registerFactory<AttendanceBloc>(()=>AttendanceBloc(attendanceRepository: sl()));
   sl.registerFactory<SettingBloc>(()=>SettingBloc(sl()));
+  sl.registerFactory<CompanyBloc>(()=>CompanyBloc(repository: sl()));
+  sl.registerFactory<PlacementSessionBloc>(()=>PlacementSessionBloc(repository: sl(),batchRepository: sl(),branchRepository: sl(),courseRepository: sl()));
 }
