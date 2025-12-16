@@ -21,6 +21,8 @@ class CompanyBloc extends Bloc<CompanyEvent, CompanyState> {
 
     // Delete company
     on<DeleteCompany>(_onDeleteCompany);
+
+    on<FetchCompanyData>(_onFetchCompanyData);
   }
 
   // ---------------- Load Companies ----------------
@@ -85,6 +87,21 @@ class CompanyBloc extends Bloc<CompanyEvent, CompanyState> {
     result.fold(
       (failure) => emit(CompanyOperationFailure(failure.message)),
       (_) => emit(CompanyDeleted()),
+    );
+  }
+
+  FutureOr<void> _onFetchCompanyData(
+    FetchCompanyData event,
+    Emitter<CompanyState> emit,
+  ) async {
+    emit(CompanyLoading());
+    final result = await repository.fetchCompanyData(
+      event.collegeId,
+      event.companyId,
+    );
+    result.fold(
+      (failure) => emit(CompanyOperationFailure(failure.message)),
+      (company) => emit(FetchedCompanyData(company: company)),
     );
   }
 }

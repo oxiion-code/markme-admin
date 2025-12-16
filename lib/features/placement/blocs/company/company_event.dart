@@ -33,6 +33,14 @@ class AddCompany extends CompanyEvent {
   @override
   List<Object?> get props => [collegeId, company, companyLogo];
 }
+class FetchCompanyData extends CompanyEvent{
+  final String collegeId;
+  final String companyId;
+  const FetchCompanyData({required this.collegeId, required this.companyId});
+  @override
+  List<Object?> get props => [collegeId, companyId];
+}
+
 
 // Update company
 class UpdateCompany extends CompanyEvent {

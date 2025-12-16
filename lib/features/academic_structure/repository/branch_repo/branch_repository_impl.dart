@@ -154,4 +154,21 @@ class BranchRepositoryImpl extends BranchRepository {
       return Left(AppFailure(message: e.toString()));
     }
   }
+
+  @override
+  Future<Either<AppFailure, List<Branch>>> loadAllBranchesForCourse(String collegeId, String courseId) async{
+    try {
+      final snapshot = await _firestore
+          .collection('branches')
+          .doc(collegeId)
+          .collection("branches").where("courseId",isEqualTo: courseId)
+          .get();
+      final branches = snapshot.docs
+          .map((doc) => Branch.fromMap(doc.data()))
+          .toList();
+      return Right(branches);
+    } catch (e) {
+      return Left(AppFailure(message: e.toString()));
+    }
+  }
 }

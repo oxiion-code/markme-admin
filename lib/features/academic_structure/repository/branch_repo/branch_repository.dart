@@ -17,6 +17,7 @@ abstract class BranchRepository {
     String collegeId,
   );
   Future<Either<AppFailure, List<Branch>>> loadAllBranches(String collegeId);
+  Future<Either<AppFailure, List<Branch>>> loadAllBranchesForCourse(String collegeId,String courseId);
   Future<Either<AppFailure, Unit>> addBranchSeats(
     BranchSeatAllocation branchSeatAllocation,String collegeId
   );

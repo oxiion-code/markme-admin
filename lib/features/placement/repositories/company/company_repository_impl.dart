@@ -13,10 +13,10 @@ class CompanyRepositoryImpl extends CompanyRepository {
   CompanyRepositoryImpl({required this.firestore, required this.storage});
   @override
   Future<Either<AppFailure, Unit>> addCompany(
-      String collegeId,
-      Company company,
-      File? companyLogo,
-      ) async {
+    String collegeId,
+    Company company,
+    File? companyLogo,
+  ) async {
     try {
       String? logoUrl;
 
@@ -27,17 +27,15 @@ class CompanyRepositoryImpl extends CompanyRepository {
           companyId: company.companyId,
           logoFile: companyLogo,
         );
-        final url = uploadResult.fold(
-              (failure) => null,
-              (url) => url,
-        );
+        final url = uploadResult.fold((failure) => null, (url) => url);
         if (url == null) {
           return Left(AppFailure(message: "Failed to upload company logo"));
         }
         logoUrl = url;
       }
-      final newCompany =
-      logoUrl != null ? company.copyWith(logoUrl: logoUrl) : company;
+      final newCompany = logoUrl != null
+          ? company.copyWith(logoUrl: logoUrl)
+          : company;
 
       await firestore
           .collection("placement")
@@ -54,9 +52,9 @@ class CompanyRepositoryImpl extends CompanyRepository {
 
   @override
   Future<Either<AppFailure, Unit>> deleteCompany(
-      String collegeId,
-      Company company,
-      ) async {
+    String collegeId,
+    Company company,
+  ) async {
     try {
       // Delete logo from storage if exists
       if (company.logoUrl != null && company.logoUrl!.isNotEmpty) {
@@ -76,10 +74,11 @@ class CompanyRepositoryImpl extends CompanyRepository {
       return Left(AppFailure(message: e.toString()));
     }
   }
+
   @override
   Future<Either<AppFailure, List<Company>>> loadCompanies(
-      String collegeId,
-      ) async {
+    String collegeId,
+  ) async {
     try {
       final snapshot = await firestore
           .collection("placement")
@@ -87,20 +86,22 @@ class CompanyRepositoryImpl extends CompanyRepository {
           .collection("companies")
           .get();
 
-      final companies =
-      snapshot.docs.map((doc) => Company.fromMap(doc.data())).toList();
+      final companies = snapshot.docs
+          .map((doc) => Company.fromMap(doc.data()))
+          .toList();
 
       return Right(companies);
     } catch (e) {
       return Left(AppFailure(message: e.toString()));
     }
   }
+
   @override
   Future<Either<AppFailure, Unit>> updateCompany(
-      String collegeId,
-      Company company,
-      File? companyLogo,
-      ) async {
+    String collegeId,
+    Company company,
+    File? companyLogo,
+  ) async {
     try {
       String? logoUrl;
 
@@ -112,10 +113,7 @@ class CompanyRepositoryImpl extends CompanyRepository {
           logoFile: companyLogo,
         );
 
-        final url = uploadResult.fold(
-              (failure) => null,
-              (url) => url,
-        );
+        final url = uploadResult.fold((failure) => null, (url) => url);
 
         if (url == null) {
           return Left(AppFailure(message: "Failed to upload company logo"));
@@ -123,8 +121,9 @@ class CompanyRepositoryImpl extends CompanyRepository {
         logoUrl = url;
       }
 
-      final updatedCompany =
-      logoUrl != null ? company.copyWith(logoUrl: logoUrl) : company;
+      final updatedCompany = logoUrl != null
+          ? company.copyWith(logoUrl: logoUrl)
+          : company;
 
       await firestore
           .collection("placement")
@@ -138,6 +137,7 @@ class CompanyRepositoryImpl extends CompanyRepository {
       return Left(AppFailure(message: e.toString()));
     }
   }
+
   Future<Either<AppFailure, String>> uploadCompanyLogo({
     required String collegeId,
     required String companyId,
@@ -157,17 +157,41 @@ class CompanyRepositoryImpl extends CompanyRepository {
       return Left(AppFailure(message: e.toString()));
     }
   }
-  Future<void> deleteCompanyLogo(
-      String collegeId,
-      String companyId,
-      ) async {
+
+  Future<void> deleteCompanyLogo(String collegeId, String companyId) async {
     final storageRef = storage.ref().child(
       "placement/$collegeId/companies/$companyId/logo.png",
     );
-
     try {
       await storageRef.delete();
-    } catch (_) {
+    } catch (_) {}
+  }
+
+  @override
+  Future<Either<AppFailure, Company>> fetchCompanyData(
+      String collegeId,
+      String companyId,
+      ) async {
+    try {
+      final snapshot = await firestore
+          .collection("placement")
+          .doc(collegeId)
+          .collection("companies")
+          .doc(companyId)
+          .get();
+      if (!snapshot.exists) {
+        return Left(
+          AppFailure(message: "Company not found"),
+        );
+      }
+      final data = snapshot.data()!;
+      final company = Company.fromMap(data);
+      return Right(company);
+    } catch (e) {
+      return Left(
+        AppFailure(message: e.toString()),
+      );
     }
   }
+
 }

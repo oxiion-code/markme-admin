@@ -29,6 +29,14 @@ class CompanyAdded extends CompanyState {}
 class CompanyDeleted extends CompanyState {}
 class CompanyUpdated extends CompanyState {}
 
+//fetch company data
+class FetchedCompanyData extends CompanyState{
+  final Company company;
+  const FetchedCompanyData({required this.company});
+  @override
+  List<Object?> get props => [company];
+}
+
 // Operation failure
 class CompanyOperationFailure extends CompanyState {
   final String message;

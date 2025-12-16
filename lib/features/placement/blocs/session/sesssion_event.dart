@@ -49,6 +49,14 @@ class LoadBranchesForPlacementSession extends PlacementSessionEvent{
   @override
   List<Object?> get props => [collegeId, courseId];
 }
+class LoadSessionData extends PlacementSessionEvent{
+  final String collegeId;
+  final String sessionId;
+  const LoadSessionData({required this.collegeId, required this.sessionId});
+  @override
+  List<Object?> get props => [collegeId,sessionId];
+}
+
 class LoadBatchesForPlacementSession extends PlacementSessionEvent{
   final String collegeId;
   final String branchId;

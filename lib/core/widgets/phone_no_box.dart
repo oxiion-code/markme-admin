@@ -30,7 +30,7 @@ class PhoneNumberBox extends StatelessWidget{
       ),
       child: Row(
         children: [
-          Image.asset("assets/icons/flag.png",height: 28,width: 28,),
+          Image.asset("assets/icon/flag.png",height: 28,width: 28,),
           const SizedBox(width: 4,),
           Text("+91",style: TextStyle(
             fontSize: 18,

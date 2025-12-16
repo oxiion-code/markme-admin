@@ -61,7 +61,7 @@ class _AuthPhoneNumberScreenState extends State<AuthPhoneNumberScreen> {
                   SizedBox(
                     width: double.infinity,
                     child: Image.asset(
-                      "assets/icons/admin_logo_no_bg.png",
+                      "assets/icon/admin_logo_no_bg.png",
                       height: 150,
                       width: 150,
                     ),

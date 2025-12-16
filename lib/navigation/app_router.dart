@@ -34,6 +34,7 @@ import 'package:markme_admin/features/placement/blocs/session/session_bloc.dart'
 import 'package:markme_admin/features/placement/models/company/company_details.dart';
 import 'package:markme_admin/features/placement/screens/company_detail_screen.dart';
 import 'package:markme_admin/features/placement/screens/placement_dashboard_screen.dart';
+import 'package:markme_admin/features/placement/screens/session_detail_screen.dart';
 import 'package:markme_admin/features/settings/bloc/setting_bloc.dart';
 import 'package:markme_admin/features/settings/screens/update_admin_screen.dart';
 import 'package:markme_admin/features/subjects/bloc/subject_bloc.dart';
@@ -289,6 +290,23 @@ final GoRouter appRouter = GoRouter(
             batchRepository: sl(),
           ),
           child: AddPlacementSessionScreen(companyDetails: companyDetails),
+        );
+      },
+    ),
+    GoRoute(
+      path: '/placementSessionDetails',
+      builder: (context, state) {
+        final data = state.extra as Map<String, String>;
+
+        return BlocProvider(
+          create: (_) => PlacementSessionBloc(
+            repository: sl(),
+            courseRepository: sl(),
+            branchRepository: sl(),
+            batchRepository: sl(),
+          ),
+          child: SessionDetailScreen(collegeId: data['collegeId']!,
+            sessionId: data['sessionId']!,),
         );
       },
     ),

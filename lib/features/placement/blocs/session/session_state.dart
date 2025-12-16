@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:markme_admin/features/academic_structure/models/academic_batch.dart';
 import 'package:markme_admin/features/academic_structure/models/branch.dart';
 import 'package:markme_admin/features/academic_structure/models/course.dart';
+import 'package:markme_admin/features/placement/models/session/placement_session.dart';
 
 
 abstract class PlacementSessionState extends Equatable {
@@ -36,11 +37,17 @@ class BranchesLoadedForSession extends PlacementSessionState{
 }
 class BatchesLoadedForSession extends PlacementSessionState{
   final List<AcademicBatch> loadedBatches;
-  const BatchesLoadedForSession({required this.loadedBatches});
+  final String branchId;
+  const BatchesLoadedForSession({required this.loadedBatches, required this.branchId});
   @override
   List<Object?> get props => [loadedBatches];
 }
-
+ class LoadedSessionData extends PlacementSessionState{
+  final PlacementSession session;
+  const LoadedSessionData({required this.session});
+  @override
+  List<Object?> get props => [session];
+ }
 
 class PlacementSessionDeleted extends PlacementSessionState {}
 

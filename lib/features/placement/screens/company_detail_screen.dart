@@ -10,6 +10,9 @@ import '../blocs/company/company_event.dart';
 import '../blocs/company/company_state.dart';
 import 'package:markme_admin/features/placement/models/company/company.dart';
 
+import '../widgets/company/job_roles_chips.dart';
+import '../widgets/company/sessions_chips.dart';
+
 class CompanyDetailsScreen extends StatefulWidget {
   final Company company;
   final String collegeId;
@@ -54,10 +57,13 @@ class _CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
     _jobRoleController.dispose();
     super.dispose();
   }
+
   Future<void> _pickLogo() async {
     final ImagePicker picker = ImagePicker();
-    final XFile? picked =
-    await picker.pickImage(source: ImageSource.gallery, imageQuality: 70);
+    final XFile? picked = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 70,
+    );
 
     if (picked != null) {
       setState(() {
@@ -65,7 +71,6 @@ class _CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
       });
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -106,15 +111,15 @@ class _CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
       ),
       bottomNavigationBar: !_isEditing
           ? Padding(
-        padding: const EdgeInsets.all(16),
-        child: _buildDeleteButton(),
-      )
+              padding: const EdgeInsets.all(16),
+              child: _buildDeleteButton(),
+            )
           : null,
       body: BlocListener<CompanyBloc, CompanyState>(
         listener: (context, state) {
-          if(state is CompanyLoading){
+          if (state is CompanyLoading) {
             AppUtils.showCustomLoading(context);
-          }else{
+          } else {
             context.pop();
           }
           if (state is CompanyUpdated) {
@@ -132,6 +137,15 @@ class _CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
             context.pop("deleted");
           } else if (state is CompanyOperationFailure) {
             AppUtils.showCustomSnackBar(context, state.message, isError: true);
+          }else if(state is FetchedCompanyData){
+            final company = state.company;
+            setState(() {
+              name = company.name;
+              description = company.description;
+              location = company.location;
+              jobRoles = List.from(company.jobRoles);
+              sessionIds = List.from(company.sessionIds);
+            });
           }
         },
         child: SingleChildScrollView(
@@ -152,13 +166,14 @@ class _CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
                       _isEditing ? name : widget.company.name,
                       _isEditing
                           ? _buildTextField(
-                        "Company Name",
-                        Icons.business,
-                        initialValue: name,
-                        onChanged: (value) => setState(() => name = value),
-                        validator: (value) =>
-                        value?.isEmpty ?? true ? "Required" : null,
-                      )
+                              "Company Name",
+                              Icons.business,
+                              initialValue: name,
+                              onChanged: (value) =>
+                                  setState(() => name = value),
+                              validator: (value) =>
+                                  value?.isEmpty ?? true ? "Required" : null,
+                            )
                           : null,
                     ),
                     const SizedBox(height: 20),
@@ -168,13 +183,14 @@ class _CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
                       _isEditing ? location : widget.company.location,
                       _isEditing
                           ? _buildTextField(
-                        "Location",
-                        Icons.location_on,
-                        initialValue: location,
-                        onChanged: (value) => setState(() => location = value),
-                        validator: (value) =>
-                        value?.isEmpty ?? true ? "Required" : null,
-                      )
+                              "Location",
+                              Icons.location_on,
+                              initialValue: location,
+                              onChanged: (value) =>
+                                  setState(() => location = value),
+                              validator: (value) =>
+                                  value?.isEmpty ?? true ? "Required" : null,
+                            )
                           : null,
                     ),
                     const SizedBox(height: 20),
@@ -184,14 +200,15 @@ class _CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
                       _isEditing ? description : widget.company.description,
                       _isEditing
                           ? _buildTextField(
-                        "Description",
-                        Icons.description,
-                        initialValue: description,
-                        maxLines: 4,
-                        onChanged: (value) => setState(() => description = value),
-                        validator: (value) =>
-                        value?.isEmpty ?? true ? "Required" : null,
-                      )
+                              "Description",
+                              Icons.description,
+                              initialValue: description,
+                              maxLines: 4,
+                              onChanged: (value) =>
+                                  setState(() => description = value),
+                              validator: (value) =>
+                                  value?.isEmpty ?? true ? "Required" : null,
+                            )
                           : null,
                     ),
                   ],
@@ -202,77 +219,50 @@ class _CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
                 _buildCard(
                   title: "Job Roles",
                   children: [
-                    if (_isEditing)
-                      Column(
-                        children: [
-                          _buildAddableField(
-                            controller: _jobRoleController,
-                            label: "Add Job Role",
-                            hint: "e.g., Software Engineer",
-                            icon: Icons.work_outline,
-                            onAdd: () {
-                              if (_jobRoleController.text.trim().isNotEmpty) {
-                                setState(() {
-                                  jobRoles.add(_jobRoleController.text.trim());
-                                  _jobRoleController.clear();
-                                });
-                              }
-                            },
-                          ),
-                          const SizedBox(height: 16),
-                        ],
-                      ),
-                    _buildEditableChipsList(
-                      items: jobRoles,
-                      icon: Icons.work,
-                      color: Colors.blue,
+                    JobRolesChips(
+                      jobRoles: jobRoles,
                       isEditable: _isEditing,
-                      onAdd: _isEditing
-                          ? () => _jobRoleController.text.trim().isNotEmpty
-                          ? _buildAddableField(
-                        controller: _jobRoleController,
-                        label: "Add Job Role",
-                        hint: "e.g., Software Engineer",
-                        icon: Icons.work_outline,
-                        onAdd: () {
-                          if (_jobRoleController.text.trim().isNotEmpty) {
-                            setState(() {
-                              jobRoles.add(_jobRoleController.text.trim());
-                              _jobRoleController.clear();
-                            });
-                          }
-                        },
-                      )
-                          : null
-                          : null,
-                      onDelete: _isEditing
-                          ? (index) => setState(() => jobRoles.removeAt(index))
-                          : null,
+                      controller: _jobRoleController,
+                      onAdd: (role) {
+                        setState(() => jobRoles.add(role));
+                      },
+                      onDelete: (index) {
+                        setState(() => jobRoles.removeAt(index));
+                      },
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 24),
 
                 // Sessions Card
                 _buildCard(
                   title: "Sessions",
                   children: [
-                    _buildEditableChipsList(
-                      items: sessionIds,
-                      icon: Icons.event,
-                      color: Colors.green,
-                      isEditable: false,
-                      onDelete: _isEditing
-                          ? (index) => setState(() => sessionIds.removeAt(index))
-                          : null,
+                    SessionsChips(
+                      sessionIds: sessionIds,
+                      onTap:
+                      (index,sessionId){
+                        context.push(
+                          '/placementSessionDetails',
+                          extra: {
+                            'collegeId': widget.collegeId,
+                            'sessionId': sessionId,
+                          },
+                        ).then((_){
+                          context.read<CompanyBloc>().add(
+                            FetchCompanyData(
+                              collegeId: widget.collegeId,
+                              companyId:widget.company.companyId,
+                            ),
+                          );
+                        });
+                      }
                     ),
                   ],
                 ),
                 const SizedBox(height: 24),
+
                 // Delete Button (only in view mode)
-
-
                 const SizedBox(height: 100),
               ],
             ),
@@ -282,14 +272,26 @@ class _CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
       floatingActionButton: _isEditing
           ? null
           : FloatingActionButton.extended(
-        onPressed: () {
-          final companyDetails= CompanyDetails(company: widget.company, collegeId: widget.collegeId);
-          context.push("/addPlacementSession",extra:companyDetails );
-        },
-        label: Text("Add session"),
-        backgroundColor: Colors.blue,
-        icon: const Icon(Icons.add, color: Colors.white),
-      ),
+              onPressed: () {
+                final companyDetails = CompanyDetails(
+                  company: widget.company,
+                  collegeId: widget.collegeId,
+                );
+                context
+                    .push("/addPlacementSession", extra: companyDetails)
+                    .then((_) {
+                      context.read<CompanyBloc>().add(
+                        FetchCompanyData(
+                          collegeId: companyDetails.collegeId,
+                          companyId: companyDetails.company.companyId,
+                        ),
+                      );
+                    });
+              },
+              label: Text("Add session"),
+              backgroundColor: Colors.blue,
+              icon: const Icon(Icons.add, color: Colors.white),
+            ),
     );
   }
 
@@ -313,7 +315,7 @@ class _CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
                         : widget.company.logoUrl.isNotEmpty
                         ? NetworkImage(widget.company.logoUrl)
                         : const AssetImage('assets/placeholder.png')
-                    as ImageProvider,
+                              as ImageProvider,
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -357,14 +359,11 @@ class _CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
               const SizedBox(height: 4),
               Text(
                 "Created: ${widget.company.createdAt.split('T')[0]}",
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 14, color: Colors.grey[600]),
               ),
               Text(
                 "${jobRoles.length} Job Role${jobRoles.length != 1 ? 's' : ''} • "
-                    "${sessionIds.length} Session${sessionIds.length != 1 ? 's' : ''}",
+                "${sessionIds.length} Session${sessionIds.length != 1 ? 's' : ''}",
                 style: TextStyle(fontSize: 14, color: Colors.grey[600]),
               ),
             ],
@@ -426,11 +425,11 @@ class _CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
   }
 
   Widget _buildInfoRow(
-      IconData icon,
-      String label,
-      String value,
-      Widget? editWidget,
-      ) {
+    IconData icon,
+    String label,
+    String value,
+    Widget? editWidget,
+  ) {
     if (editWidget != null) return editWidget;
 
     return Container(
@@ -472,13 +471,13 @@ class _CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
   }
 
   Widget _buildTextField(
-      String label,
-      IconData icon, {
-        String? initialValue,
-        int maxLines = 1,
-        String? Function(String?)? validator,
-        void Function(String)? onChanged,
-      }) {
+    String label,
+    IconData icon, {
+    String? initialValue,
+    int maxLines = 1,
+    String? Function(String?)? validator,
+    void Function(String)? onChanged,
+  }) {
     return TextFormField(
       initialValue: initialValue,
       maxLines: maxLines,
@@ -508,130 +507,6 @@ class _CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
       onChanged: onChanged,
     );
   }
-
-  Widget _buildAddableField({
-    required TextEditingController controller,
-    required String label,
-    required String hint,
-    required IconData icon,
-    required VoidCallback onAdd,
-  }) {
-    return Row(
-      children: [
-        Expanded(
-          child: TextField(
-            controller: controller,
-            decoration: InputDecoration(
-              labelText: label,
-              hintText: hint,
-              prefixIcon: Icon(icon, color: Colors.grey[600]),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-                borderSide: BorderSide(color: Colors.grey[300]!),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-                borderSide: const BorderSide(color: Colors.blue, width: 2),
-              ),
-              filled: true,
-              fillColor: Colors.grey[50],
-            ),
-          ),
-        ),
-        const SizedBox(width: 12),
-        ElevatedButton.icon(
-          onPressed:onAdd,
-          icon: const Icon(Icons.add, size: 18),
-          label: const Text("Add"),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.blue[600],
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildEditableChipsList({
-    required List<String> items,
-    required IconData icon,
-    required Color color,
-    required bool isEditable,
-    VoidCallback? onAdd,
-    void Function(int)? onDelete,
-  }) {
-    if (items.isEmpty) {
-      return Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.grey[50],
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey[200]!),
-        ),
-        child: Column(
-          children: [
-            Icon(icon, size: 48, color: Colors.grey[400]),
-            const SizedBox(height: 8),
-            Text(
-              "No ${color == Colors.blue ? 'job roles' : 'sessions'} added",
-              style: TextStyle(color: Colors.grey[600], fontSize: 14),
-            ),
-            if (isEditable) ...[
-              const SizedBox(height: 12),
-              ElevatedButton.icon(
-                onPressed: onAdd,
-                icon: const Icon(Icons.add, size: 16),
-                label: Text("Add ${color == Colors.blue ? 'Job Role' : 'Session'}"),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: color,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-            ],
-          ],
-        ),
-      );
-    }
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withValues(alpha: 0.2)),
-      ),
-      child: Wrap(
-        spacing: 8,
-        runSpacing: 8,
-        children: items
-            .asMap()
-            .entries
-            .map(
-              (entry) => Chip(
-            label: Text(entry.value),
-            avatar: Icon(icon, size: 16, color: color),
-            backgroundColor: color.withValues(alpha: 0.1),
-            deleteIcon: isEditable
-                ? Icon(Icons.close, size: 16, color: Colors.grey[600])
-                : null,
-            onDeleted: isEditable ? () => onDelete!(entry.key) : null,
-          ),
-        )
-            .toList(),
-      ),
-    );
-  }
-
   Widget _buildDeleteButton() {
     return SizedBox(
       height: 56,
@@ -653,6 +528,7 @@ class _CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
       ),
     );
   }
+
   void _onSave() {
     if (_formKey.currentState!.validate()) {
       final company = Company(
@@ -676,7 +552,7 @@ class _CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
   }
 
   void _showDeleteConfirmation() {
-    final parentContext= context;
+    final parentContext = context;
     showDialog(
       context: parentContext,
       builder: (context) => AlertDialog(
@@ -702,7 +578,7 @@ class _CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
               parentContext.read<CompanyBloc>().add(
                 DeleteCompany(
                   collegeId: widget.collegeId,
-                  company:widget.company, // Fixed: use companyId
+                  company: widget.company, // Fixed: use companyId
                 ),
               );
             },

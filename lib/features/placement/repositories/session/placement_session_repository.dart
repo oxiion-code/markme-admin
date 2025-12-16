@@ -7,4 +7,5 @@ abstract class PlacementSessionRepository{
   Future<Either<AppFailure,Unit>> addSession(PlacementSession session);
   Future<Either<AppFailure,Unit>> deleteSession(PlacementSession session);
   Future<Either<AppFailure,Unit>> updateSession(PlacementSession session);
+  Future<Either<AppFailure,PlacementSession>> loadPlacementSession(String collegeId,String sessionId);
 }
