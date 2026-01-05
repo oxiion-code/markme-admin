@@ -13,7 +13,7 @@ abstract class ClassRepository {
   Future<Either<AppFailure, Unit>> deleteClass(String classId);
   Future<Either<AppFailure, List<ClassInfo>>> getAllClasses();
   Future<Either<AppFailure, List<ClassInfo>>> getClassesForTeacher(String teacherId);
-  Stream<Either<AppFailure,List<ClassSession>>> getCurrentDayClasses();
+  Stream<Either<AppFailure,List<ClassSession>>> getCurrentDayClasses(String collegeId);
 
   // Dropdown data
   Future<Either<AppFailure, List<Course>>> getAllCourses();

@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:markme_admin/core/utils/app_utils.dart';
-import '../blocs/company/company_bloc.dart';
-import '../blocs/company/company_event.dart';
-import '../blocs/company/company_state.dart';
+import '../../blocs/company/company_bloc.dart';
+import '../../blocs/company/company_event.dart';
+import '../../blocs/company/company_state.dart';
 import 'package:markme_admin/features/placement/models/company/company.dart';
 
 class AddCompanyScreen extends StatefulWidget {

@@ -210,9 +210,13 @@ class _ManageSectionsState extends State<ManageSections> {
                 final section = state.sections[index];
                 return SectionCard(
                   section: section,
-                  onDelete: () => context.read<SectionBloc>().add(
-                    DeleteSectionEvent(section: section, collegeId: collegeId),
-                  ),
+                  onDelete: () {
+                    AppUtils.showDeleteConfirmation(context: context, onConfirmDelete: (){
+                      context.read<SectionBloc>().add(
+                        DeleteSectionEvent(section: section, collegeId: collegeId),
+                      );
+                    });
+                  },
                 );
               },
             );

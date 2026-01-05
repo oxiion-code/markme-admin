@@ -26,8 +26,8 @@ class UploadBannerImageEvent extends OnboardEvent{
   List<Object?> get props => [bannerImage,collegeUid];
 }
 
-class LoadAllClassesEvent extends OnboardEvent{
-  const LoadAllClassesEvent();
+class LoadAllCollegesEvent extends OnboardEvent{
+  const LoadAllCollegesEvent();
   @override
   List<Object?> get props => [];
 }

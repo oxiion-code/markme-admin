@@ -130,7 +130,7 @@ class ClassRepositoryImpl extends ClassRepository {
   }
 
   @override
-  Stream<Either<AppFailure, List<ClassSession>>> getCurrentDayClasses() {
+  Stream<Either<AppFailure, List<ClassSession>>> getCurrentDayClasses(String collegeId) {
     try {
       final now = DateTime.now();
       final startOfDay = DateTime(
@@ -149,7 +149,7 @@ class ClassRepositoryImpl extends ClassRepository {
       ).millisecondsSinceEpoch;
 
       return firestore
-          .collection('classSessions')
+          .collection('classSessions').doc(collegeId).collection('classSessions')
           .where('date', isGreaterThanOrEqualTo: startOfDay)
           .where('date', isLessThanOrEqualTo: endOfDay)
           .snapshots()

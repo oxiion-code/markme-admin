@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:markme_admin/core/services/service_locator.dart';
+
 import 'package:markme_admin/features/academic_structure/bloc/batch_bloc/academic_batch_bloc.dart';
 import 'package:markme_admin/features/academic_structure/bloc/branch_bloc/branch_bloc.dart';
 import 'package:markme_admin/features/academic_structure/bloc/course_bloc/course_bloc.dart';
@@ -32,20 +33,44 @@ import 'package:markme_admin/features/permissions/screens/student_permissions_sc
 import 'package:markme_admin/features/placement/blocs/company/company_bloc.dart';
 import 'package:markme_admin/features/placement/blocs/session/session_bloc.dart';
 import 'package:markme_admin/features/placement/models/company/company_details.dart';
-import 'package:markme_admin/features/placement/screens/company_detail_screen.dart';
-import 'package:markme_admin/features/placement/screens/placement_dashboard_screen.dart';
-import 'package:markme_admin/features/placement/screens/session_detail_screen.dart';
+import 'package:markme_admin/features/placement/models/session/placement_form.dart';
+import 'package:markme_admin/features/placement/models/session/application_args.dart';
+import 'package:markme_admin/features/placement/models/session/document_args.dart';
+import 'package:markme_admin/features/placement/screens/applications/application_details_screen.dart';
+import 'package:markme_admin/features/placement/screens/applications/document_viewer_screen.dart';
+import 'package:markme_admin/features/placement/screens/applications/take_session_attendance_screen.dart';
+import 'package:markme_admin/features/placement/screens/company/company_detail_screen.dart';
+import 'package:markme_admin/features/placement/screens/company/placement_dashboard_screen.dart';
+import 'package:markme_admin/features/placement/screens/applications/session_applications_screen.dart';
+import 'package:markme_admin/features/placement/screens/company/session_detail_screen.dart';
+import 'package:markme_admin/features/section_promotion/screens/section_promotion_screen.dart';
 import 'package:markme_admin/features/settings/bloc/setting_bloc.dart';
+import 'package:markme_admin/features/settings/screens/college_schdule_screen.dart';
 import 'package:markme_admin/features/settings/screens/update_admin_screen.dart';
+import 'package:markme_admin/features/student_onboarding/screens/section_allotment/students_for_section_list.dart';
+
 import 'package:markme_admin/features/subjects/bloc/subject_bloc.dart';
+import 'package:markme_admin/features/settings/screens/add_class_shedule_screen.dart';
 import 'package:markme_admin/features/subjects/screens/manage_subjects.dart';
 import 'package:markme_admin/features/teacher/bloc/teacher_bloc.dart';
 import 'package:markme_admin/features/teacher/screens/manage_teachers.dart';
 
 import '../features/auth/screens/splash_screen.dart';
-import '../features/placement/screens/add_company_screen.dart';
-import '../features/placement/screens/add_placement_session_screen.dart';
+import '../features/placement/models/session/placement_session.dart';
+import '../features/placement/screens/company/add_company_screen.dart';
+import '../features/placement/screens/company/add_placement_session_screen.dart';
 import '../features/settings/screens/setting_screen.dart';
+import '../features/student_onboarding/bloc/student_verification_bloc.dart';
+import '../features/student_onboarding/bloc/student_verification_event.dart';
+import '../features/student_onboarding/models/qualification.dart';
+import '../features/student_onboarding/models/student_list_args.dart';
+import '../features/student_onboarding/models/student_verification_args.dart';
+import '../features/student_onboarding/screens/section_allotment/student_section_allotment_filter.dart';
+import '../features/student_onboarding/screens/student_onboarding.dart';
+import '../features/student_onboarding/screens/student_verification/pdf_viewer_screen.dart';
+import '../features/student_onboarding/screens/student_verification/student_verification_confirmation_screen.dart';
+import '../features/student_onboarding/screens/student_verification/student_verification_filter_screen.dart';
+import '../features/student_onboarding/screens/student_verification/students_verification_list_screen.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: '/',
@@ -111,6 +136,116 @@ final GoRouter appRouter = GoRouter(
       },
     ),
     GoRoute(
+      path: '/student-verification-filter',
+      name: 'student_verification_filter',
+      builder: (context, state) {
+        final admin = state.extra as AdminUser;
+        return BlocProvider(
+          create: (_) => StudentOnboardingBloc(
+            verificationRepository: sl(),
+            courseRepository: sl(),
+            branchRepository: sl(),
+            academicBatchRepository: sl(),
+            sectionRepository: sl(),
+          )..add(
+            LoadCoursesForStudentEvent(collegeId: admin.collegeId),
+          ),
+          child: StudentVerificationFilterScreen(
+            collegeId: admin.collegeId,
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      path: '/section-allotment-filter',
+      name: 'section_allotment_filter',
+      builder: (context, state) {
+        final admin = state.extra as AdminUser;
+        return BlocProvider(
+          create: (_) => StudentOnboardingBloc(
+            verificationRepository: sl(),
+            courseRepository: sl(),
+            branchRepository: sl(),
+            academicBatchRepository: sl(),
+            sectionRepository: sl(),
+          ),
+          child: SectionAllotmentFilterScreen(collegeId: admin.collegeId),
+        );
+      },
+    ),
+    GoRoute(
+      path: '/section-allotment-list',
+      name: 'section_allotment_list',
+      builder: (context, state) {
+        final args = state.extra as StudentListArgs;
+        return BlocProvider(
+          create: (_) => StudentOnboardingBloc(
+            verificationRepository: sl(),
+            courseRepository: sl(),
+            branchRepository: sl(),
+            academicBatchRepository: sl(),
+            sectionRepository: sl(),
+          ),
+          child: SectionAllotmentScreen(args: args),
+        );
+      },
+    ),
+    GoRoute(
+      path: '/student-verification-list',
+      name: 'student_verification_list',
+      builder: (context, state) {
+        final studentArgs = state.extra as StudentListArgs;
+        return BlocProvider(
+          create: (_) => StudentOnboardingBloc(
+            verificationRepository: sl(),
+            courseRepository: sl(),
+            branchRepository: sl(),
+            academicBatchRepository: sl(),
+            sectionRepository: sl(),
+          ),
+          child: StudentVerificationListScreen(
+            students: studentArgs.students,
+            collegeId: studentArgs.collegeId,
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      path: '/student-verification-details',
+      name: 'student_verification_details',
+      builder: (context, state) {
+        final studentArgs = state.extra as StudentVerificationArgs;
+        return BlocProvider(
+          create: (_) => StudentOnboardingBloc(
+            verificationRepository: sl(),
+            courseRepository: sl(),
+            branchRepository: sl(),
+            academicBatchRepository: sl(),
+            sectionRepository: sl(),
+          ),
+          child: StudentVerificationConfirmationScreen(
+            student: studentArgs.student,
+            collegeId: studentArgs.collegeId,
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      path: "/student-document",
+      builder: (context, state) {
+        final qualification = state.extra as Qualification;
+        return PdfViewerScreen(qualification: qualification);
+      },
+    ),
+    GoRoute(
+      path: "/student-onboarding",
+      builder: (context, state) {
+        final admin = state.extra as AdminUser;
+        return StudentOnboardingScreen(admin: admin);
+      },
+    ),
+
+    GoRoute(
       path: '/manageCourses',
       name: 'manage_courses',
       builder: (context, state) {
@@ -155,8 +290,19 @@ final GoRouter appRouter = GoRouter(
       name: 'manage_sections',
       builder: (context, state) {
         return BlocProvider(
-          create: (_) => SectionBloc(sl(), sl(), sl(), sl()),
+          create: (_) => SectionBloc(sl(), sl(), sl(), sl(),sl()),
           child: ManageSections(),
+        );
+      },
+    ),
+    GoRoute(
+      path: '/promote-sections',
+      name: 'promote_sections',
+      builder: (context, state) {
+        final admin=state.extra as AdminUser;
+        return BlocProvider(
+          create: (_) => SectionBloc(sl(), sl(), sl(), sl(),sl()),
+          child: SectionPromotionScreen(collegeId: admin.collegeId),
         );
       },
     ),
@@ -246,12 +392,13 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/managePlacement',
       builder: (context, state) {
+        final admin=state.extra as AdminUser;
         return MultiBlocProvider(
           providers: [
             BlocProvider(create: (_) => CompanyBloc(repository: sl())),
             // Add more BlocProviders here if needed
           ],
-          child: PlacementDashboardScreen(),
+          child: PlacementDashboardScreen(adminUser: admin,),
         );
       },
     ),
@@ -297,7 +444,6 @@ final GoRouter appRouter = GoRouter(
       path: '/placementSessionDetails',
       builder: (context, state) {
         final data = state.extra as Map<String, String>;
-
         return BlocProvider(
           create: (_) => PlacementSessionBloc(
             repository: sl(),
@@ -305,10 +451,80 @@ final GoRouter appRouter = GoRouter(
             branchRepository: sl(),
             batchRepository: sl(),
           ),
-          child: SessionDetailScreen(collegeId: data['collegeId']!,
-            sessionId: data['sessionId']!,),
+          child: SessionDetailScreen(
+            collegeId: data['collegeId']!,
+            sessionId: data['sessionId']!,
+          ),
         );
       },
     ),
+    GoRoute(path: '/sessionApplications',
+      builder: (context, state) {
+       final args= state.extra as ApplicationArgs;
+        return BlocProvider(
+          create: (_) => PlacementSessionBloc(
+            repository: sl(),
+            courseRepository: sl(),
+            branchRepository: sl(),
+            batchRepository: sl(),
+          ),
+          child: PlacementSessionApplicationsScreen(collegeId: args.collegeId, session: args.placementSession),
+        );
+      },
+    ),
+    GoRoute(path: '/take-attendance',
+      builder: (context, state) {
+        final args = state.extra as Map<String, dynamic>;
+        final String collegeId = args['collegeId'];
+        final PlacementSession session = args['session'];
+        final List<PlacementForm> applications = args['applications'];
+        return BlocProvider(
+          create: (_) => PlacementSessionBloc(
+            repository: sl(),
+            courseRepository: sl(),
+            branchRepository: sl(),
+            batchRepository: sl(),
+          ),
+          child: TakeSessionAttendanceScreen(collegeId: collegeId, session: session, applications: applications),
+        );
+      },
+    ),
+    GoRoute(
+      path: "/application-details",
+      name: "application_details",
+      builder: (context, state) {
+        final application = state.extra as PlacementForm;
+        return PlacementApplicationDetailsScreen(application: application);
+      },
+    ),
+    GoRoute(
+      path: "/document",
+      name: "document",
+      builder: (context, state) {
+        final args = state.extra as DocumentArgs;
+        return PdfUrlViewerScreen(pdfUrl: args.url,title: args.title,);
+      },
+    ),
+    GoRoute(
+      path: '/collegeSchedule',
+      builder: (context, state) {
+        final admin = state.extra as AdminUser;
+        return BlocProvider(
+          create: (_) => SettingBloc(sl()),
+          child: CollegeScheduleDetailsScreen(adminUser: admin),
+        );
+      },
+    ),
+    GoRoute(
+      path: '/addCollegeSchedule',
+      builder: (context, state) {
+        final admin = state.extra as AdminUser;
+        return BlocProvider(
+          create: (_) => SettingBloc(sl()),
+          child: CollegeScheduleScreen(adminUser: admin),
+        );
+      },
+    ),
+
   ],
 );

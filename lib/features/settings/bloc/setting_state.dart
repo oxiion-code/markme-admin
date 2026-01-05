@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:markme_admin/features/onboarding/models/college_detail.dart';
 import 'package:markme_admin/features/onboarding/models/user_model.dart';
 
 class SettingState extends Equatable{
@@ -24,4 +25,12 @@ class SettingError extends SettingState{
   const SettingError(this.message);
   @override
   List<Object?> get props => [message];
+}
+class CollegeScheduleUploaded extends SettingState{
+}
+class CollegeDetailsLoaded extends SettingState{
+  final CollegeDetail collegeDetail;
+  const CollegeDetailsLoaded({required this.collegeDetail});
+  @override
+  List<Object?> get props => [collegeDetail];
 }

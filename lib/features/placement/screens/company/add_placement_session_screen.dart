@@ -3,21 +3,21 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:markme_admin/core/utils/app_utils.dart';
 
-import '../../academic_structure/models/academic_batch.dart';
-import '../../academic_structure/models/branch.dart';
-import '../../academic_structure/models/course.dart';
+import '../../../academic_structure/models/academic_batch.dart';
+import '../../../academic_structure/models/branch.dart';
+import '../../../academic_structure/models/course.dart';
 
-import '../blocs/session/session_bloc.dart';
-import '../blocs/session/session_state.dart';
-import '../blocs/session/sesssion_event.dart';
-import '../models/company/company_details.dart';
-import '../models/session/eligibility.dart';
-import '../models/session/placement_session.dart';
+import '../../blocs/session/session_bloc.dart';
+import '../../blocs/session/session_state.dart';
+import '../../blocs/session/session_event.dart';
+import '../../models/company/company_details.dart';
+import '../../models/session/eligibility.dart';
+import '../../models/session/placement_session.dart';
 
-import '../widgets/add_placement_session/company_info_section.dart';
-import '../widgets/add_placement_session/session_details_section.dart';
-import '../widgets/add_placement_session/eligibility_section.dart';
-import '../widgets/add_placement_session/schedule_section.dart';
+import '../../widgets/add_placement_session/company_info_section.dart';
+import '../../widgets/add_placement_session/session_details_section.dart';
+import '../../widgets/add_placement_session/eligibility_section.dart';
+import '../../widgets/add_placement_session/schedule_section.dart';
 
 class AddPlacementSessionScreen extends StatefulWidget {
   final CompanyDetails companyDetails;

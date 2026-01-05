@@ -21,7 +21,7 @@ class CurrentSessionBloc extends Bloc<CurrentSessionEvent, CurrentClassSessionSt
     emit(CurrentSessionLoading());
 
     await emit.forEach(
-      repository.getCurrentDayClasses(),
+      repository.getCurrentDayClasses(event.collegeId),
       onData: (either) => either.fold(
             (failure) => CurrentSessionFailed(message: failure.message),
             (sessions) {

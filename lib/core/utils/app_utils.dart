@@ -77,7 +77,7 @@ class AppUtils{
       context: context,
       builder: (_) => AlertDialog(
         title: const Text("Confirm Delete"),
-        content: const Text("Are you sure you want to delete this teacher?"),
+        content: const Text("Are you sure you want to delete ?"),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),

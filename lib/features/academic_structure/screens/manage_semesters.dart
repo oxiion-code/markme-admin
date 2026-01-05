@@ -169,9 +169,11 @@ class _ManageSemestersState extends State<ManageSemesters> {
                       );
                     },
                     onDelete: () {
-                      context
-                          .read<SemesterBloc>()
-                          .add(DeleteSemesterEvent(semester,collegeId));
+                     AppUtils.showDeleteConfirmation(context: context, onConfirmDelete:(){
+                       context
+                           .read<SemesterBloc>()
+                           .add(DeleteSemesterEvent(semester,collegeId));
+                     });
                     },
                   );
                 },

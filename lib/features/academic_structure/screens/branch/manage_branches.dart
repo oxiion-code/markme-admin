@@ -152,7 +152,9 @@ class _ManageBranchesState extends State<ManageBranches> {
                   return BranchContainer(
                     branch: branch,
                     onDelete: () {
-                      context.read<BranchBloc>().add(DeleteBranchEvent(branch: branch,collegeId: collegeId));
+                      AppUtils.showDeleteConfirmation(context: context, onConfirmDelete: (){
+                        context.read<BranchBloc>().add(DeleteBranchEvent(branch: branch,collegeId: collegeId));
+                      });
                     },
                     onTap: (){
                       context.push('/seatAllocation', extra: branch);

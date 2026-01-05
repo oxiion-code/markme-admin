@@ -28,7 +28,7 @@ class _SelectCollegeScreenState extends State<SelectCollegeScreen> {
 
   @override
   void initState() {
-    context.read<OnboardBloc>().add(LoadAllClassesEvent());
+    context.read<OnboardBloc>().add(LoadAllCollegesEvent());
     super.initState();
   }
 

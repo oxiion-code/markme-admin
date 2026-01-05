@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 class PlacementForm {
@@ -8,11 +7,12 @@ class PlacementForm {
   final String companyName;
   final String jobTitle;
 
-  // Student Basic Info
+  // Student Info
+  final String studentId;
   final String studentName;
   final String registrationNo;
-  final String course;
-  final String branch;
+  final String courseId;
+  final String batchId;
 
   // 10th Details
   final String tenthCollegeName;
@@ -29,7 +29,7 @@ class PlacementForm {
   final String graduationCertificateUrl;
   final String graduationCgpaOrPercentage;
 
-  // Masters / Post Graduation Details
+  // Masters Details
   final String mastersCollegeName;
   final String mastersCertificateUrl;
   final String mastersCgpaOrPercentage;
@@ -52,10 +52,11 @@ class PlacementForm {
     required this.companyId,
     required this.companyName,
     required this.jobTitle,
+    required this.studentId,
     required this.studentName,
     required this.registrationNo,
-    required this.course,
-    required this.branch,
+    required this.courseId,
+    required this.batchId,
     required this.tenthCollegeName,
     required this.tenthCertificateUrl,
     required this.tenthCgpaOrPercentage,
@@ -75,16 +76,18 @@ class PlacementForm {
     required this.createdAt,
   });
 
+  /// 🔁 copyWith
   PlacementForm copyWith({
     String? applicationId,
     String? sessionId,
     String? companyId,
     String? companyName,
     String? jobTitle,
+    String? studentId,
     String? studentName,
     String? registrationNo,
-    String? course,
-    String? branch,
+    String? courseId,
+    String? batchId,
     String? tenthCollegeName,
     String? tenthCertificateUrl,
     String? tenthCgpaOrPercentage,
@@ -109,16 +112,20 @@ class PlacementForm {
       companyId: companyId ?? this.companyId,
       companyName: companyName ?? this.companyName,
       jobTitle: jobTitle ?? this.jobTitle,
+      studentId: studentId ?? this.studentId,
       studentName: studentName ?? this.studentName,
       registrationNo: registrationNo ?? this.registrationNo,
-      course: course ?? this.course,
-      branch: branch ?? this.branch,
+      courseId: courseId ?? this.courseId,
+      batchId: batchId ?? this.batchId,
       tenthCollegeName: tenthCollegeName ?? this.tenthCollegeName,
-      tenthCertificateUrl: tenthCertificateUrl ?? this.tenthCertificateUrl,
+      tenthCertificateUrl:
+      tenthCertificateUrl ?? this.tenthCertificateUrl,
       tenthCgpaOrPercentage:
       tenthCgpaOrPercentage ?? this.tenthCgpaOrPercentage,
-      twelfthCollegeName: twelfthCollegeName ?? this.twelfthCollegeName,
-      twelfthCertificateUrl: twelfthCertificateUrl ?? this.twelfthCertificateUrl,
+      twelfthCollegeName:
+      twelfthCollegeName ?? this.twelfthCollegeName,
+      twelfthCertificateUrl:
+      twelfthCertificateUrl ?? this.twelfthCertificateUrl,
       twelfthCgpaOrPercentage:
       twelfthCgpaOrPercentage ?? this.twelfthCgpaOrPercentage,
       graduationCollegeName:
@@ -127,7 +134,8 @@ class PlacementForm {
       graduationCertificateUrl ?? this.graduationCertificateUrl,
       graduationCgpaOrPercentage:
       graduationCgpaOrPercentage ?? this.graduationCgpaOrPercentage,
-      mastersCollegeName: mastersCollegeName ?? this.mastersCollegeName,
+      mastersCollegeName:
+      mastersCollegeName ?? this.mastersCollegeName,
       mastersCertificateUrl:
       mastersCertificateUrl ?? this.mastersCertificateUrl,
       mastersCgpaOrPercentage:
@@ -141,17 +149,19 @@ class PlacementForm {
     );
   }
 
+  /// 📤 toMap
   Map<String, dynamic> toMap() {
-    return <String, dynamic>{
+    return {
       'applicationId': applicationId,
       'sessionId': sessionId,
       'companyId': companyId,
       'companyName': companyName,
       'jobTitle': jobTitle,
+      'studentId': studentId,
       'studentName': studentName,
       'registrationNo': registrationNo,
-      'course': course,
-      'branch': branch,
+      'courseId': courseId,
+      'batchId': batchId,
       'tenthCollegeName': tenthCollegeName,
       'tenthCertificateUrl': tenthCertificateUrl,
       'tenthCgpaOrPercentage': tenthCgpaOrPercentage,
@@ -172,35 +182,41 @@ class PlacementForm {
     };
   }
 
+  /// 🔄 fromMap (NULL SAFE)
   factory PlacementForm.fromMap(Map<String, dynamic> map) {
     return PlacementForm(
-      applicationId: map['applicationId'] as String,
-      sessionId: map['sessionId'] as String,
-      companyId: map['companyId'] as String,
-      companyName: map['companyName'] as String,
-      jobTitle: map['jobTitle'] as String,
-      studentName: map['studentName'] as String,
-      registrationNo: map['registrationNo'] as String,
-      course: map['course'] as String,
-      branch: map['branch'] as String,
-      tenthCollegeName: map['tenthCollegeName'] as String,
-      tenthCertificateUrl: map['tenthCertificateUrl'] as String,
-      tenthCgpaOrPercentage: map['tenthCgpaOrPercentage'] as String,
-      twelfthCollegeName: map['twelfthCollegeName'] as String,
-      twelfthCertificateUrl: map['twelfthCertificateUrl'] as String,
-      twelfthCgpaOrPercentage: map['twelfthCgpaOrPercentage'] as String,
-      graduationCollegeName: map['graduationCollegeName'] as String,
-      graduationCertificateUrl: map['graduationCertificateUrl'] as String,
+      applicationId: map['applicationId'] ?? '',
+      sessionId: map['sessionId'] ?? '',
+      companyId: map['companyId'] ?? '',
+      companyName: map['companyName'] ?? '',
+      jobTitle: map['jobTitle'] ?? '',
+      studentId: map['studentId'] ?? '',
+      studentName: map['studentName'] ?? '',
+      registrationNo: map['registrationNo'] ?? '',
+      courseId: map['courseId'] ?? '',
+      batchId: map['batchId'] ?? '',
+      tenthCollegeName: map['tenthCollegeName'] ?? '',
+      tenthCertificateUrl: map['tenthCertificateUrl'] ?? '',
+      tenthCgpaOrPercentage: map['tenthCgpaOrPercentage'] ?? '',
+      twelfthCollegeName: map['twelfthCollegeName'] ?? '',
+      twelfthCertificateUrl: map['twelfthCertificateUrl'] ?? '',
+      twelfthCgpaOrPercentage: map['twelfthCgpaOrPercentage'] ?? '',
+      graduationCollegeName: map['graduationCollegeName'] ?? '',
+      graduationCertificateUrl:
+      map['graduationCertificateUrl'] ?? '',
       graduationCgpaOrPercentage:
-      map['graduationCgpaOrPercentage'] as String,
-      mastersCollegeName: map['mastersCollegeName'] as String,
-      mastersCertificateUrl: map['mastersCertificateUrl'] as String,
-      mastersCgpaOrPercentage: map['mastersCgpaOrPercentage'] as String,
-      undertakingDescription: map['undertakingDescription'] as String,
-      undertakingDate: map['undertakingDate'] as String,
-      signatureUrl: map['signatureUrl'] as String,
-      isSelected: map['isSelected'] as bool,
-      createdAt: map['createdAt'] as String,
+      map['graduationCgpaOrPercentage'] ?? '',
+      mastersCollegeName: map['mastersCollegeName'] ?? '',
+      mastersCertificateUrl:
+      map['mastersCertificateUrl'] ?? '',
+      mastersCgpaOrPercentage:
+      map['mastersCgpaOrPercentage'] ?? '',
+      undertakingDescription:
+      map['undertakingDescription'] ?? '',
+      undertakingDate: map['undertakingDate'] ?? '',
+      signatureUrl: map['signatureUrl'] ?? '',
+      isSelected: map['isSelected'] ?? false,
+      createdAt: map['createdAt'] ?? '',
     );
   }
 
@@ -210,68 +226,14 @@ class PlacementForm {
       PlacementForm.fromMap(json.decode(source));
 
   @override
-  String toString() {
-    return 'PlacementApplication(applicationId: $applicationId, sessionId: $sessionId, companyId: $companyId, companyName: $companyName, jobTitle: $jobTitle, studentName: $studentName, registrationNo: $registrationNo, course: $course, branch: $branch, isSelected: $isSelected)';
-  }
+  String toString() =>
+      'PlacementForm(applicationId: $applicationId, student: $studentName, company: $companyName)';
 
   @override
-  bool operator ==(covariant PlacementForm other) {
-    if (identical(this, other)) return true;
-    return other.applicationId == applicationId &&
-        other.sessionId == sessionId &&
-        other.companyId == companyId &&
-        other.companyName == companyName &&
-        other.jobTitle == jobTitle &&
-        other.studentName == studentName &&
-        other.registrationNo == registrationNo &&
-        other.course == course &&
-        other.branch == branch &&
-        other.tenthCollegeName == tenthCollegeName &&
-        other.tenthCertificateUrl == tenthCertificateUrl &&
-        other.tenthCgpaOrPercentage == tenthCgpaOrPercentage &&
-        other.twelfthCollegeName == twelfthCollegeName &&
-        other.twelfthCertificateUrl == twelfthCertificateUrl &&
-        other.twelfthCgpaOrPercentage == twelfthCgpaOrPercentage &&
-        other.graduationCollegeName == graduationCollegeName &&
-        other.graduationCertificateUrl == graduationCertificateUrl &&
-        other.graduationCgpaOrPercentage == graduationCgpaOrPercentage &&
-        other.mastersCollegeName == mastersCollegeName &&
-        other.mastersCertificateUrl == mastersCertificateUrl &&
-        other.mastersCgpaOrPercentage == mastersCgpaOrPercentage &&
-        other.undertakingDescription == undertakingDescription &&
-        other.undertakingDate == undertakingDate &&
-        other.signatureUrl == signatureUrl &&
-        other.isSelected == isSelected &&
-        other.createdAt == createdAt;
-  }
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+          other is PlacementForm && other.applicationId == applicationId;
 
   @override
-  int get hashCode {
-    return applicationId.hashCode ^
-    sessionId.hashCode ^
-    companyId.hashCode ^
-    companyName.hashCode ^
-    jobTitle.hashCode ^
-    studentName.hashCode ^
-    registrationNo.hashCode ^
-    course.hashCode ^
-    branch.hashCode ^
-    tenthCollegeName.hashCode ^
-    tenthCertificateUrl.hashCode ^
-    tenthCgpaOrPercentage.hashCode ^
-    twelfthCollegeName.hashCode ^
-    twelfthCertificateUrl.hashCode ^
-    twelfthCgpaOrPercentage.hashCode ^
-    graduationCollegeName.hashCode ^
-    graduationCertificateUrl.hashCode ^
-    graduationCgpaOrPercentage.hashCode ^
-    mastersCollegeName.hashCode ^
-    mastersCertificateUrl.hashCode ^
-    mastersCgpaOrPercentage.hashCode ^
-    undertakingDescription.hashCode ^
-    undertakingDate.hashCode ^
-    signatureUrl.hashCode ^
-    isSelected.hashCode ^
-    createdAt.hashCode;
-  }
+  int get hashCode => applicationId.hashCode;
 }

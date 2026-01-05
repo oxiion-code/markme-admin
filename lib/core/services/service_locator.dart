@@ -4,9 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:markme_admin/features/academic_structure/bloc/batch_bloc/academic_batch_bloc.dart';
 import 'package:markme_admin/features/academic_structure/bloc/branch_bloc/branch_bloc.dart';
 import 'package:markme_admin/features/academic_structure/bloc/course_bloc/course_bloc.dart';
-import 'package:markme_admin/features/academic_structure/bloc/section_bloc/section_bloc.dart';
 import 'package:markme_admin/features/academic_structure/bloc/semester_bloc/semester_bloc.dart';
-import 'package:markme_admin/features/academic_structure/models/branch.dart';
 import 'package:markme_admin/features/academic_structure/repository/batch_repo/academic_batch_repository.dart';
 import 'package:markme_admin/features/academic_structure/repository/batch_repo/academic_batch_repository_impl.dart';
 import 'package:markme_admin/features/academic_structure/repository/branch_repo/branch_repository.dart';
@@ -29,8 +27,6 @@ import 'package:markme_admin/features/classes/repository/class_repository.dart';
 import 'package:markme_admin/features/classes/repository/class_repository_impl.dart';
 import 'package:markme_admin/features/onboarding/repository/onboard_repository.dart';
 import 'package:markme_admin/features/onboarding/repository/onboard_repository_impl.dart';
-import 'package:markme_admin/features/placement/blocs/company/company_bloc.dart';
-import 'package:markme_admin/features/placement/blocs/session/session_bloc.dart';
 import 'package:markme_admin/features/placement/repositories/company/company_repository.dart';
 import 'package:markme_admin/features/placement/repositories/company/company_repository_impl.dart';
 import 'package:markme_admin/features/placement/repositories/session/placement_session_repository.dart';
@@ -38,6 +34,9 @@ import 'package:markme_admin/features/placement/repositories/session/placement_s
 import 'package:markme_admin/features/settings/bloc/setting_bloc.dart';
 import 'package:markme_admin/features/settings/repositoies/setting_repository.dart';
 import 'package:markme_admin/features/settings/repositoies/setting_repository_impl.dart';
+import 'package:markme_admin/features/student_onboarding/bloc/student_verification_bloc.dart';
+import 'package:markme_admin/features/student_onboarding/repository/student_verification_repository.dart';
+import 'package:markme_admin/features/student_onboarding/repository/student_verification_repository_impl.dart';
 import 'package:markme_admin/features/subjects/bloc/subject_bloc.dart';
 import 'package:markme_admin/features/subjects/repository/subject_repository.dart';
 import 'package:markme_admin/features/subjects/repository/subject_repository_impl.dart';
@@ -72,6 +71,7 @@ Future<void> init() async{
   sl.registerLazySingleton<SettingRepository>(()=>SettingRepositoryImpl(sl(), sl()));
   sl.registerLazySingleton<CompanyRepository>(()=>CompanyRepositoryImpl(firestore: sl(), storage: sl()));
   sl.registerLazySingleton<PlacementSessionRepository>(()=>PlacementSessionRepositoryImpl(firestore: sl()));
+  sl.registerLazySingleton<StudentVerificationRepository>(()=>StudentVerificationRepositoryImpl(firestore: sl(), storage: sl()));
 
   //blocs
   sl.registerFactory<AuthBloc>(()=>AuthBloc(sl()));
@@ -85,6 +85,5 @@ Future<void> init() async{
   sl.registerFactory<CurrentSessionBloc>(()=>CurrentSessionBloc(repository: sl()));
   sl.registerFactory<AttendanceBloc>(()=>AttendanceBloc(attendanceRepository: sl()));
   sl.registerFactory<SettingBloc>(()=>SettingBloc(sl()));
-  sl.registerFactory<CompanyBloc>(()=>CompanyBloc(repository: sl()));
-  sl.registerFactory<PlacementSessionBloc>(()=>PlacementSessionBloc(repository: sl(),batchRepository: sl(),branchRepository: sl(),courseRepository: sl()));
+  sl.registerFactory<StudentOnboardingBloc>(()=>StudentOnboardingBloc(verificationRepository: sl(), courseRepository: sl(), branchRepository: sl(),academicBatchRepository: sl(),sectionRepository: sl()));
 }

@@ -37,12 +37,14 @@ class _AddSectionBottomSheetState extends State<AddSectionBottomSheet> {
   List<AcademicBatch> loadedBatches = [];
   List<Teacher> loadedTeachers = [];
 
-
   final TextEditingController nameController = TextEditingController();
   final TextEditingController defaultRoomController = TextEditingController();
+  final TextEditingController seatController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-    final collegeId=context.read<AdminUserCubit>().state!.collegeId;
+    final collegeId = context.read<AdminUserCubit>().state!.collegeId;
+
     return BlocListener<SectionBloc, SectionState>(
       listener: (context, state) {
         if (state is BatchesLoaded) {
@@ -51,6 +53,7 @@ class _AddSectionBottomSheetState extends State<AddSectionBottomSheet> {
             selectedBatchId = null;
           });
         }
+
         if (state is TeachersLoadedForSection) {
           setState(() {
             loadedTeachers = state.teachers;
@@ -69,13 +72,14 @@ class _AddSectionBottomSheetState extends State<AddSectionBottomSheet> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Text("Add section"),
+              const Text("Add section"),
               const SizedBox(height: 16),
 
+              /// Branch Dropdown
               DropdownButton<String>(
                 isExpanded: true,
                 value: selectedBranchId,
-                hint: Text('Select a branch'),
+                hint: const Text('Select a branch'),
                 items: widget.branches.map((branch) {
                   return DropdownMenuItem<String>(
                     value: branch.branchId,
@@ -84,25 +88,32 @@ class _AddSectionBottomSheetState extends State<AddSectionBottomSheet> {
                 }).toList(),
                 onChanged: (value) {
                   final selectedBranch = widget.branches.firstWhere(
-                    (branch) => branch.branchId == value,
+                        (branch) => branch.branchId == value,
                   );
+
                   setState(() {
-                    selectedBranchId = value!;
+                    selectedBranchId = value;
                     selectedCourseId = selectedBranch.courseId;
                     loadedBatches.clear();
                     loadedTeachers.clear();
                   });
+
                   context.read<SectionBloc>().add(
-                    LoadAllBatchesEvent(branchId: selectedBranchId!, collegeId: collegeId),
+                    LoadAllBatchesEvent(
+                      branchId: selectedBranchId!,
+                      collegeId: collegeId,
+                    ),
                   );
                 },
               ),
+
               const SizedBox(height: 16),
 
+              /// Batch Dropdown
               DropdownButton<String>(
                 isExpanded: true,
                 value: selectedBatchId,
-                hint: Text('Select a Batch'),
+                hint: const Text('Select a Batch'),
                 items: loadedBatches.map((batch) {
                   return DropdownMenuItem<String>(
                     value: batch.batchId,
@@ -113,19 +124,26 @@ class _AddSectionBottomSheetState extends State<AddSectionBottomSheet> {
                 }).toList(),
                 onChanged: (value) {
                   setState(() {
-                    selectedBatchId = value!;
+                    selectedBatchId = value;
                   });
+
                   context.read<SectionBloc>().add(
-                    LoadTeachersForSection(branchId: selectedBranchId!,collegeId: collegeId),
+                    LoadTeachersForSection(
+                      branchId: selectedBranchId!,
+                      collegeId: collegeId,
+                    ),
                   );
                 },
               ),
+
               const SizedBox(height: 16),
+
+              /// HOD Dropdown
               if (loadedTeachers.isNotEmpty)
-                DropdownButton(
+                DropdownButton<String>(
                   isExpanded: true,
                   value: selectedHodId,
-                  hint: Text("Select HOD"),
+                  hint: const Text("Select HOD"),
                   items: loadedTeachers.map((t) {
                     return DropdownMenuItem<String>(
                       value: t.teacherId,
@@ -140,11 +158,13 @@ class _AddSectionBottomSheetState extends State<AddSectionBottomSheet> {
                 ),
 
               const SizedBox(height: 16),
+
+              /// Proctor Dropdown
               if (loadedTeachers.isNotEmpty)
-                DropdownButton(
+                DropdownButton<String>(
                   isExpanded: true,
                   value: selectedProctorId,
-                  hint: Text("Select HOD"),
+                  hint: const Text("Select Proctor"),
                   items: loadedTeachers.map((t) {
                     return DropdownMenuItem<String>(
                       value: t.teacherId,
@@ -158,42 +178,62 @@ class _AddSectionBottomSheetState extends State<AddSectionBottomSheet> {
                   },
                 ),
 
+              const SizedBox(height: 16),
+
               CustomTextbox(
                 controller: nameController,
                 icon: Icons.abc_outlined,
-                hint: 'eg:section k, CSE I',
+                hint: 'eg: Section K, CSE I',
               ),
+
               const SizedBox(height: 16),
+
               CustomTextbox(
                 controller: defaultRoomController,
-                icon: Icons.abc_outlined,
+                icon: Icons.location_on_outlined,
                 hint: 'eg: W103, M204',
               ),
+
               const SizedBox(height: 16),
+
+              CustomTextbox(
+                controller: seatController,
+                icon: Icons.event_seat,
+                hint: 'eg: 70',
+              ),
+
+              const SizedBox(height: 16),
+
               ElevatedButton(
                 onPressed: () {
                   final name = nameController.text.trim();
                   final defaultRoom = defaultRoomController.text.trim();
+                  final seatCountText = seatController.text.trim();
+
+                  final seatCount = int.tryParse(seatCountText);
+
                   if (selectedBranchId != null &&
                       selectedBatchId != null &&
                       selectedCourseId != null &&
                       selectedHodId != null &&
                       selectedProctorId != null &&
                       defaultRoom.isNotEmpty &&
-                      name.isNotEmpty) {
+                      name.isNotEmpty &&
+                      seatCount != null) {
                     final hodName = loadedTeachers
                         .firstWhere((t) => t.teacherId == selectedHodId)
                         .teacherName;
+
                     final proctorName = loadedTeachers
-                        .firstWhere((p) => p.teacherId == selectedProctorId)
+                        .firstWhere((t) => t.teacherId == selectedProctorId)
                         .teacherName;
+
                     widget.onAddSectionClick(
                       Section(
                         sectionId: "${selectedBatchId!}_$name",
                         sectionName: name,
                         batchId: selectedBatchId!,
                         branchId: selectedBranchId!,
-                        studentIds: [],
                         courseId: selectedCourseId!,
                         defaultRoom: defaultRoom,
                         currentSemesterNumber: 1,
@@ -202,18 +242,21 @@ class _AddSectionBottomSheetState extends State<AddSectionBottomSheet> {
                         proctorId: selectedProctorId,
                         hodName: hodName,
                         proctorName: proctorName,
+                        availableSeats: seatCount,
+                        totalSeatsAllocated: seatCount,
                       ),
                     );
+
                     Navigator.pop(context);
                   } else {
                     AppUtils.showDialogMessage(
                       context,
-                      "Select all fields and enter values",
+                      "Select all fields and enter valid values",
                       "Sorry...",
                     );
                   }
                 },
-                child: Text("Add section"),
+                child: const Text("Add section"),
               ),
             ],
           ),

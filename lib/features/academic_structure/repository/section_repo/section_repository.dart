@@ -7,4 +7,6 @@ abstract class SectionRepository{
   Future<Either<AppFailure,Unit>> updateSection(Section section,String collegeId);
   Future<Either<AppFailure,Unit>> deleteSection(Section section,String collegeId);
   Future<Either<AppFailure,List<Section>>> getAllSections(String branchId,String collegeId);
+  Future<Either<AppFailure,List<Section>>> getAllSectionsForStudent(String branchId,String collegeId,String batchId);
+  Future<Either<AppFailure, Unit>> promoteSection(String collegeId, String sectionId, String currentSemesterId,int currentSemNumber);
 }

@@ -2,7 +2,9 @@ import 'package:equatable/equatable.dart';
 import 'package:markme_admin/features/academic_structure/models/academic_batch.dart';
 import 'package:markme_admin/features/academic_structure/models/branch.dart';
 import 'package:markme_admin/features/academic_structure/models/course.dart';
+import 'package:markme_admin/features/placement/models/session/placement_form.dart';
 import 'package:markme_admin/features/placement/models/session/placement_session.dart';
+import 'package:markme_admin/features/placement/models/session/session_attendance.dart';
 
 
 abstract class PlacementSessionState extends Equatable {
@@ -51,6 +53,18 @@ class BatchesLoadedForSession extends PlacementSessionState{
 
 class PlacementSessionDeleted extends PlacementSessionState {}
 
+class AllPlacementSessionLoaded extends PlacementSessionState{
+  final List<PlacementSession> placementSessions;
+  const AllPlacementSessionLoaded({required this.placementSessions});
+  @override
+  List<Object?> get props => [placementSessions];
+}
+class ApplicationsLoadedForSession extends PlacementSessionState{
+  final List<PlacementForm> placementForms;
+  const ApplicationsLoadedForSession({required this.placementForms});
+  @override
+  List<Object?> get props => [placementForms];
+}
 
 class PlacementSessionFailure extends PlacementSessionState {
   final String message;
@@ -59,4 +73,12 @@ class PlacementSessionFailure extends PlacementSessionState {
 
   @override
   List<Object?> get props => [message];
+}
+class AttendanceMarkedForSession extends PlacementSessionState{
+}
+class AttendanceDeletedForSession extends PlacementSessionState{
+}
+class LoadedAttendanceForSession extends PlacementSessionState{
+final SessionAttendanceModel? sessionAttendanceModel;
+const LoadedAttendanceForSession({required this.sessionAttendanceModel});
 }

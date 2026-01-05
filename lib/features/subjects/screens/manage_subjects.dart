@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:markme_admin/features/academic_structure/widgets/semester_widget/filter_semester_app_bar.dart';
 import 'package:markme_admin/features/onboarding/cubit/admin_user_cubit.dart';
+
 import '../../../core/utils/app_utils.dart';
-import '../../academic_structure/models/academic_batch.dart';
 import '../../academic_structure/models/branch.dart';
 import '../bloc/subject_bloc.dart';
 import '../bloc/subject_event.dart';
@@ -20,17 +20,20 @@ class ManageSubjects extends StatefulWidget {
 }
 
 class _ManageSubjectsState extends State<ManageSubjects> {
-  List<Branch> branches=[];
-  List<AcademicBatch> batches=[];
+  List<Branch> branches = [];
   Branch? selectedBranch;
 
   @override
   void initState() {
     super.initState();
-    final collegeId= context.read<AdminUserCubit>().state!.collegeId;
+    final collegeId = context.read<AdminUserCubit>().state!.collegeId;
     context.read<SubjectBloc>().add(LoadAllBranches(collegeId: collegeId));
   }
-  void _showBranchFilterSheet(BuildContext context,String collegeId) {
+
+  // -----------------------------------------------------
+  // BRANCH FILTER SHEET
+  // -----------------------------------------------------
+  void _showBranchFilterSheet(BuildContext context, String collegeId) {
     if (branches.isEmpty) {
       AppUtils.showCustomSnackBar(context, "No branches available");
       return;
@@ -43,12 +46,7 @@ class _ManageSubjectsState extends State<ManageSubjects> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (ctx) => Padding(
-        padding: EdgeInsets.only(
-          left: 20,
-          right: 20,
-          top: 20,
-          bottom: MediaQuery.of(ctx).viewInsets.bottom + 20,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         child: ListView(
           shrinkWrap: true,
           children: [
@@ -59,7 +57,7 @@ class _ManageSubjectsState extends State<ManageSubjects> {
             const SizedBox(height: 16),
 
             ...branches.map(
-                  (branch) => ListTile(
+              (branch) => ListTile(
                 leading: Icon(
                   selectedBranch?.branchId == branch.branchId
                       ? Icons.radio_button_checked
@@ -69,11 +67,13 @@ class _ManageSubjectsState extends State<ManageSubjects> {
                 title: Text(branch.branchName),
                 onTap: () {
                   Navigator.pop(context);
-                  setState(() {
-                    selectedBranch = branch;
-                  });
+                  setState(() => selectedBranch = branch);
+
                   context.read<SubjectBloc>().add(
-                    LoadAllBatches(collegeId: collegeId,branchId: selectedBranch!.branchId),
+                    GetAllSubjects(
+                      collegeId: collegeId,
+                      branchId: branch.branchId,
+                    ),
                   );
                 },
               ),
@@ -85,37 +85,46 @@ class _ManageSubjectsState extends State<ManageSubjects> {
   }
 
   // -----------------------------------------------------
-  // SHOW ADD SUBJECT BOTTOM SHEET
+  // ADD SUBJECT BOTTOM SHEET
   // -----------------------------------------------------
-  void _showAddSubjectSheet(BuildContext context,String collegeId) {
-    if (branches.isEmpty || batches.isEmpty) {
+  void _showAddSubjectSheet(BuildContext context, String collegeId) {
+    if (branches.isEmpty) {
       AppUtils.showCustomSnackBar(context, "Please wait, still loading...");
       return;
     }
 
+    final parentContext = context;
+
     showModalBottomSheet(
-      context: context,
+      context: parentContext,
       isScrollControlled: true,
-      builder: (_) {
-        return AddSubjectBottomSheet(
-          branches: branches,
-          batches: batches,
-          onAddSubjectClick: (subject) {
-            context.read<SubjectBloc>().add(AddSubjectEvent(subject,collegeId));
-          },
+      builder: (sheetContext) {
+        return BlocProvider.value(
+          value: parentContext.read<SubjectBloc>(),
+          child: AddSubjectBottomSheet(
+            branches: branches,
+            collegeId: collegeId,
+            onAddSubjectClick: (subject) {
+              parentContext.read<SubjectBloc>().add(
+                AddSubjectEvent(subject, collegeId),
+              );
+            },
+          ),
         );
       },
     );
   }
+
   @override
   Widget build(BuildContext context) {
-    final collegeId= context.read<AdminUserCubit>().state!.collegeId;
+    final collegeId = context.read<AdminUserCubit>().state!.collegeId;
+
     return Scaffold(
       appBar: SemesterAppNavBar(
         title: selectedBranch == null
-            ? "Manage Subjects"
+            ? "Manage Subjects(${branches.isNotEmpty?branches.first.branchName:""})"
             : "Manage Subjects (${selectedBranch!.branchName})",
-        onTap: () => _showBranchFilterSheet(context,collegeId), // filter button
+        onTap: () => _showBranchFilterSheet(context, collegeId),
       ),
 
       floatingActionButton: FloatingActionButton.extended(
@@ -125,7 +134,7 @@ class _ManageSubjectsState extends State<ManageSubjects> {
           "Add Subject",
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
         ),
-        onPressed: () => _showAddSubjectSheet(context,collegeId),
+        onPressed: () => _showAddSubjectSheet(context, collegeId),
       ),
 
       body: BlocConsumer<SubjectBloc, SubjectState>(
@@ -138,28 +147,22 @@ class _ManageSubjectsState extends State<ManageSubjects> {
 
           if (state is SubjectError) {
             AppUtils.showCustomSnackBar(context, state.message);
-          } else if (state is SubjectSuccess) {
-            AppUtils.showCustomSnackBar(context, "Operation Success");
+          }
+
+          if (state is SubjectSuccess) {
+            if(state.operation=="add"){
+              AppUtils.showCustomSnackBar(context, "New Subject Added");
+            }else if(state.operation=="update"){
+              AppUtils.showCustomSnackBar(context, "Subject Updated");
+            }else{
+              AppUtils.showCustomSnackBar(context, "Subject Deleted");
+            }
           }
 
           if (state is BranchesLoaded) {
-            setState(() {
-              branches = state.branches;
-              if (branches.isNotEmpty) {
-                selectedBranch = branches.first;
-                context.read<SubjectBloc>().add(
-                  LoadAllBatches( collegeId:collegeId , branchId: branches.first.branchId),
-                );
-              }
-            });
-          } else if (state is BatchesLoaded) {
-            setState(() {
-              batches = state.batches;
-            });
-            if(selectedBranch!=null){
-              context.read<SubjectBloc>().add(GetAllSubjects(collegeId: collegeId,branchId: selectedBranch!.branchId));
-            }else{
-              AppUtils.showCustomSnackBar(context, "Branch is not selected");
+            setState(() => branches = state.branches);
+            if(branches.isNotEmpty){
+              context.read<SubjectBloc>().add(GetAllSubjects(collegeId: collegeId, branchId: branches.first.branchId));
             }
           }
         },
@@ -189,17 +192,20 @@ class _ManageSubjectsState extends State<ManageSubjects> {
               itemCount: subjects.length,
               itemBuilder: (context, index) {
                 final subject = subjects[index];
-
                 return SubjectCard(
                   subject: subject,
                   onDelete: () {
-                    context.read<SubjectBloc>().add(DeleteSubjectEvent(subject,collegeId));
+                    context.read<SubjectBloc>().add(
+                      DeleteSubjectEvent(subject, collegeId),
+                    );
                   },
                 );
               },
             );
           }
-          return const Center();
+          return const Center(
+            child: Text("Select a branch from filter option"),
+          );
         },
       ),
     );

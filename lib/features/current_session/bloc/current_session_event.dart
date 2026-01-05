@@ -7,7 +7,8 @@ class CurrentSessionEvent extends Equatable{
 }
 
 class LoadClassSessionsEvent extends CurrentSessionEvent{
-  const LoadClassSessionsEvent();
+  final String collegeId;
+  const LoadClassSessionsEvent({required this.collegeId});
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [collegeId];
 }

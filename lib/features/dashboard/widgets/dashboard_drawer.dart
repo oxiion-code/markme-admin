@@ -82,6 +82,14 @@ class DashboardDrawer extends StatelessWidget {
             },
           ),
           ListTile(
+            leading: Icon(Icons.cast_for_education),
+            title: const Text('Student Onboarding'),
+            onTap: () {
+              context.pop();
+              context.push("/student-onboarding", extra: user);
+            },
+          ),
+          ListTile(
             leading: Icon(Icons.perm_device_info_sharp),
             title: const Text('Manage Permissions'),
             onTap: () {
@@ -89,12 +97,13 @@ class DashboardDrawer extends StatelessWidget {
               context.pushNamed("manage_permissions", extra: user);
             },
           ),
+
           ListTile(
             leading: Icon(Icons.plagiarism),
             title: const Text('Manage Placement'),
             onTap: () {
               context.pop();
-              context.push('/managePlacement');
+              context.push('/managePlacement',extra: user);
             },
           ),
           ListTile(
@@ -111,6 +120,14 @@ class DashboardDrawer extends StatelessWidget {
             onTap: () {
               context.pop();
               context.push('/manageTeachers');
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.upgrade_sharp),
+            title: const Text('Promote Sections'),
+            onTap: () {
+              context.pop();
+              context.push('/promote-sections',extra: user);
             },
           ),
 

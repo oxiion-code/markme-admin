@@ -65,6 +65,25 @@ class _SettingScreenState extends State<SettingScreen> {
             children: [
               ListTile(
                 onTap: () {
+                  context.push("/collegeSchedule",extra:  widget.admin);
+                },
+                title: Text(
+                  "College schedule",
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                subtitle: Text(
+                  "Update class timings",
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleSmall
+                      ?.copyWith(color: Colors.grey),
+                ),
+                leading: const Icon(Icons.timer),
+                tileColor: Colors.blue.shade50,
+              ),
+              const SizedBox(height: 8,),
+              ListTile(
+                onTap: () {
                   context.push("/updateProfile",extra:  widget.admin);
                 },
                 title: Text(

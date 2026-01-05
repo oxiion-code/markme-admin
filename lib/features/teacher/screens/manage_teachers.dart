@@ -53,7 +53,7 @@ class _ManageTeachersState extends State<ManageTeachers> {
                   teacherName: name,
                   email: email,
                   branchId: branchId,
-                  phoneNumber: "91$phoneNumber",
+                  phoneNumber: "+91$phoneNumber",
                   profilePhotoUrl: "",
                   gender: "",
                   assignedClasses: [],

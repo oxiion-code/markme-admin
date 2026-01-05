@@ -6,9 +6,9 @@ import 'package:markme_admin/features/onboarding/cubit/admin_user_cubit.dart';
 import 'package:markme_admin/features/placement/models/company/company.dart';
 import 'package:markme_admin/features/placement/models/company/company_details.dart';
 
-import '../blocs/company/company_bloc.dart';
-import '../blocs/company/company_event.dart';
-import '../blocs/company/company_state.dart';
+import '../../blocs/company/company_bloc.dart';
+import '../../blocs/company/company_event.dart';
+import '../../blocs/company/company_state.dart';
 
 class CompaniesTab extends StatefulWidget {
   const CompaniesTab({super.key});

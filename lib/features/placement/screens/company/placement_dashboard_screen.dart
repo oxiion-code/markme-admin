@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:markme_admin/features/placement/screens/applications_tab.dart';
-import 'package:markme_admin/features/placement/screens/companies_screen.dart';
+import 'package:markme_admin/features/academic_structure/repository/batch_repo/academic_batch_repository.dart';
+import 'package:markme_admin/features/academic_structure/repository/branch_repo/branch_repository.dart';
+import 'package:markme_admin/features/academic_structure/repository/course_repo/course_repository.dart';
+import 'package:markme_admin/features/onboarding/models/user_model.dart';
+import 'package:markme_admin/features/placement/blocs/session/session_bloc.dart';
+import 'package:markme_admin/features/placement/repositories/session/placement_session_repository.dart';
+import 'package:markme_admin/features/placement/screens/applications/applications_tab.dart';
+import 'package:markme_admin/features/placement/screens/company/companies_screen.dart';
 
-import '../../../core/services/service_locator.dart';
-import '../blocs/company/company_bloc.dart';
-import '../repositories/company/company_repository.dart';
+import '../../../../core/services/service_locator.dart';
+import '../../blocs/company/company_bloc.dart';
+import '../../repositories/company/company_repository.dart';
 class PlacementDashboardScreen extends StatelessWidget {
-  const PlacementDashboardScreen({super.key});
+  final AdminUser adminUser;
+  const PlacementDashboardScreen({super.key, required this.adminUser});
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +65,16 @@ class PlacementDashboardScreen extends StatelessWidget {
                 ),
                 child: const CompaniesTab(),
               ),
-              const ApplicationsTab(),
+              BlocProvider(
+                create: (_) => PlacementSessionBloc(
+                  batchRepository:sl<AcademicBatchRepository>() ,
+                  branchRepository:sl<BranchRepository>() ,
+                  courseRepository: sl<CourseRepository>(),
+                  repository: sl<PlacementSessionRepository>(), // make sure sl() has it registered
+                ),
+                child:ApplicationsTab(collegeId:adminUser.collegeId,),
+              ),
+
             ],
           ),
         ),
@@ -67,21 +83,3 @@ class PlacementDashboardScreen extends StatelessWidget {
   }
 }
 
-class _PlaceholderTab extends StatelessWidget {
-  final String title;
-  const _PlaceholderTab({required this.title, super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      elevation: 2,
-      child: Center(
-        child: Text(
-          '$title content goes here',
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-      ),
-    );
-  }
-}

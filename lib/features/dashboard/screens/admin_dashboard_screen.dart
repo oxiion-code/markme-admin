@@ -48,7 +48,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<CurrentSessionBloc>().add(LoadClassSessionsEvent());
+    context.read<CurrentSessionBloc>().add(LoadClassSessionsEvent(collegeId: widget.user.collegeId));
   }
 
   @override
@@ -70,7 +70,7 @@ class _DashboardBody extends StatelessWidget {
       builder: (context, state) {
         return RefreshIndicator(
           onRefresh: () async {
-            context.read<CurrentSessionBloc>().add(LoadClassSessionsEvent());
+            context.read<CurrentSessionBloc>().add(LoadClassSessionsEvent(collegeId: user.collegeId));
           },
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),

@@ -238,9 +238,11 @@ class _ManageBatchesState extends State<ManageBatches> {
                     rightCornerButtonIcon: Icons.delete_outline,
                     rightCornerButtonIconColor: Colors.redAccent,
                     onRightCornerButtonPressed: () {
-                      context
-                          .read<AcademicBatchBloc>()
-                          .add(DeleteBatchEvent(collegeId: collegeId,batch: batch));
+                     AppUtils.showDeleteConfirmation(context: context, onConfirmDelete: (){
+                       context
+                           .read<AcademicBatchBloc>()
+                           .add(DeleteBatchEvent(collegeId: collegeId,batch: batch));
+                     });
                     },
                   );
                 },

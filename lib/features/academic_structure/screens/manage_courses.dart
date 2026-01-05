@@ -142,9 +142,11 @@ class _ManageCoursesState extends State<ManageCourses> {
                       );
                     },
                     onDelete: () {
-                      context
-                          .read<CourseBloc>()
-                          .add(DeleteCourseEvent(course: course, collegeId: admin!.collegeId));
+                      AppUtils.showDeleteConfirmation(context: context, onConfirmDelete: (){
+                        context
+                            .read<CourseBloc>()
+                            .add(DeleteCourseEvent(course: course, collegeId: admin!.collegeId));
+                      });
                     },
                   );
                 },

@@ -20,7 +20,6 @@ class AddSemesterBottomSheet extends StatefulWidget {
 }
 
 class _AddSemesterBottomSheetState extends State<AddSemesterBottomSheet> {
-  final TextEditingController idController = TextEditingController();
   final TextEditingController numberController = TextEditingController();
 
   String? selectedCourse;
@@ -88,13 +87,6 @@ class _AddSemesterBottomSheetState extends State<AddSemesterBottomSheet> {
             ),
             const SizedBox(height: 16),
 
-            // Semester ID
-            CustomTextbox(
-              controller: idController,
-              icon: Icons.flag,
-              hint: 'Enter semester ID',
-            ),
-            const SizedBox(height: 14),
 
             // Semester number
             CustomTextbox(
@@ -164,15 +156,15 @@ class _AddSemesterBottomSheetState extends State<AddSemesterBottomSheet> {
             ElevatedButton(
               onPressed: () {
                 if (selectedCourse != null &&
-                    idController.text.trim().isNotEmpty &&
                     numberController.text.trim().isNotEmpty &&
                     startDate != null &&
                     endDate != null) {
+                  final num= int.parse(numberController.text.trim());
                   widget.addSemester(
                     Semester(
                       courseId: selectedCourse!,
                       semesterId:
-                      "${selectedCourse!}_${idController.text.trim()}",
+                      "${selectedCourse!}_sem_0$num",
                       semesterNumber:
                       int.parse(numberController.text.trim()),
                       startDate: startDate!.millisecondsSinceEpoch,

@@ -30,7 +30,7 @@ class SubjectBloc extends Bloc<SubjectEvent, SubjectState> {
     result.fold(
       (failure) => emit(SubjectError(failure.message)),
       (_) {
-        emit(SubjectSuccess());
+        emit(SubjectSuccess(branchId: event.subject.branchId,operation: "add"));
         add(GetAllSubjects(collegeId: event.collegeId,branchId: event.subject.branchId));
       },
     );
@@ -45,7 +45,7 @@ class SubjectBloc extends Bloc<SubjectEvent, SubjectState> {
     result.fold(
       (failure) => emit(SubjectError(failure.message)),
       (_){
-        emit(SubjectSuccess());
+        emit(SubjectSuccess(branchId: event.subject.branchId,operation: "update"));
         add(GetAllSubjects(collegeId: event.collegeId,branchId: event.subject.branchId));
       },
     );
@@ -60,12 +60,11 @@ class SubjectBloc extends Bloc<SubjectEvent, SubjectState> {
     result.fold(
       (failure) => emit(SubjectError(failure.message)),
       (_){
-        emit(SubjectSuccess());
+        emit(SubjectSuccess(branchId: event.subject.branchId,operation: "delete"));
         add(GetAllSubjects(collegeId: event.collegeId,branchId: event.subject.branchId));
       } ,
     );
   }
-
   FutureOr<void> _getAllSubjects(
     GetAllSubjects event,
     Emitter<SubjectState> emit,

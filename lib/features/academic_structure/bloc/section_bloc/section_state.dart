@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:markme_admin/features/academic_structure/models/academic_batch.dart';
 import 'package:markme_admin/features/academic_structure/models/branch.dart';
+import 'package:markme_admin/features/academic_structure/models/course.dart';
 import 'package:markme_admin/features/academic_structure/models/section.dart';
 import 'package:markme_admin/features/teacher/models/teacher.dart';
 
@@ -12,6 +13,7 @@ class SectionState extends Equatable{
 
 class SectionInitial extends SectionState{}
 class SectionLoading extends SectionState{}
+class PromoteSectionLoading extends SectionState{}
 class SectionSuccess extends SectionState{}
 class SectionError extends SectionState{
   final String message;
@@ -31,6 +33,12 @@ class BatchesLoaded extends SectionState{
   @override
   List<Object?> get props => [batches];
 }
+class CoursesLoaded extends SectionState{
+  final List<Course> courses;
+  const CoursesLoaded({required this.courses});
+  @override
+  List<Object?> get props => [courses];
+}
 class BranchesLoaded extends SectionState{
   final List<Branch> branches;
   const BranchesLoaded(this.branches);
@@ -43,3 +51,4 @@ class TeachersLoadedForSection extends SectionState{
   @override
   List<Object?> get props => [teachers];
 }
+class SectionPromoted extends SectionState{}

@@ -13,7 +13,11 @@ class SubjectState extends Equatable{
 
 class SubjectInitial extends SubjectState{}
 class SubjectLoading extends SubjectState{}
-class SubjectSuccess extends SubjectState{}
+class SubjectSuccess extends SubjectState{
+  final String operation;
+  final String branchId;
+  const SubjectSuccess({required this.branchId, required this.operation});
+}
 class SubjectError extends SubjectState{
   final String message;
   const SubjectError(this.message);

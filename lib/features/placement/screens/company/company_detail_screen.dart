@@ -5,13 +5,13 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:markme_admin/core/utils/app_utils.dart';
 import 'package:markme_admin/features/placement/models/company/company_details.dart';
-import '../blocs/company/company_bloc.dart';
-import '../blocs/company/company_event.dart';
-import '../blocs/company/company_state.dart';
+import '../../blocs/company/company_bloc.dart';
+import '../../blocs/company/company_event.dart';
+import '../../blocs/company/company_state.dart';
 import 'package:markme_admin/features/placement/models/company/company.dart';
 
-import '../widgets/company/job_roles_chips.dart';
-import '../widgets/company/sessions_chips.dart';
+import '../../widgets/company/job_roles_chips.dart';
+import '../../widgets/company/sessions_chips.dart';
 
 class CompanyDetailsScreen extends StatefulWidget {
   final Company company;

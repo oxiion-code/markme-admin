@@ -4,9 +4,9 @@ import 'package:go_router/go_router.dart';
 import 'package:markme_admin/core/utils/app_utils.dart';
 import 'package:markme_admin/features/placement/blocs/session/session_bloc.dart';
 import 'package:markme_admin/features/placement/blocs/session/session_state.dart';
-import 'package:markme_admin/features/placement/blocs/session/sesssion_event.dart';
-import '../models/session/eligibility.dart';
-import '../models/session/placement_session.dart';
+import 'package:markme_admin/features/placement/blocs/session/session_event.dart';
+import '../../models/session/eligibility.dart';
+import '../../models/session/placement_session.dart';
 
 class SessionDetailScreen extends StatefulWidget {
   final String collegeId;

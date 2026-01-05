@@ -6,7 +6,7 @@ import 'package:markme_admin/features/academic_structure/repository/batch_repo/a
 import 'package:markme_admin/features/academic_structure/repository/branch_repo/branch_repository.dart';
 import 'package:markme_admin/features/academic_structure/repository/course_repo/course_repository.dart';
 import 'package:markme_admin/features/placement/blocs/session/session_state.dart';
-import 'package:markme_admin/features/placement/blocs/session/sesssion_event.dart';
+import 'package:markme_admin/features/placement/blocs/session/session_event.dart';
 
 import '../../../../core/error/failure.dart';
 import '../../repositories/session/placement_session_repository.dart';
@@ -30,6 +30,11 @@ class PlacementSessionBloc
     on<LoadBranchesForPlacementSession>(_loadBranches);
     on<LoadBatchesForPlacementSession>(_loadBatches);
     on<LoadSessionData>(_loadSessionData);
+    on<LoadPlacementSessionsEvent>(_loadPlacementSessions);
+    on<LoadSessionApplicationsEvent>(_onLoadSessionApplications);
+    on<MarkSessionAttendanceEvent>(_onMarkSessionAttendance);
+    on<DeleteSessionAttendanceEvent>(_onDeleteSessionAttendance);
+    on<GetSessionAttendanceEvent>(_onGetSessionAttendance);
   }
 
   /// ➕ ADD SESSION
@@ -126,20 +131,102 @@ class PlacementSessionBloc
 
     result.fold(
       (failure) => emit(PlacementSessionFailure(failure.message)),
-      (batches) => emit(BatchesLoadedForSession(loadedBatches: batches,branchId: event.branchId)),
+      (batches) => emit(
+        BatchesLoadedForSession(
+          loadedBatches: batches,
+          branchId: event.branchId,
+        ),
+      ),
     );
   }
 
-  FutureOr<void> _loadSessionData(LoadSessionData event, Emitter<PlacementSessionState> emit) async{
+  FutureOr<void> _loadSessionData(
+    LoadSessionData event,
+    Emitter<PlacementSessionState> emit,
+  ) async {
     emit(PlacementSessionLoading());
 
     final result = await repository.loadPlacementSession(
       event.collegeId,
-      event.sessionId
+      event.sessionId,
+    );
+    result.fold(
+      (failure) => emit(PlacementSessionFailure(failure.message)),
+      (session) => emit(LoadedSessionData(session: session)),
+    );
+  }
+
+  FutureOr<void> _loadPlacementSessions(
+    LoadPlacementSessionsEvent event,
+    Emitter<PlacementSessionState> emit,
+  ) async {
+    emit(PlacementSessionLoading());
+    final result = await repository.loadLivePlacementSessions(event.collegeId);
+    result.fold(
+      (failure) => emit(PlacementSessionFailure(failure.message)),
+      (placementSessions) =>
+          emit(AllPlacementSessionLoaded(placementSessions: placementSessions)),
+    );
+  }
+
+  FutureOr<void> _onLoadSessionApplications(
+    LoadSessionApplicationsEvent event,
+    Emitter<PlacementSessionState> emit,
+  ) async {
+    emit(PlacementSessionLoading());
+    final result = await repository.loadSessionApplications(
+      event.collegeId,
+      event.sessionId,
+    );
+    result.fold(
+      (failure) => emit(PlacementSessionFailure(failure.message)),
+      (forms) => emit(ApplicationsLoadedForSession(placementForms: forms)),
+    );
+  }
+
+  FutureOr<void> _onMarkSessionAttendance(
+    MarkSessionAttendanceEvent event,
+    Emitter<PlacementSessionState> emit,
+  ) async {
+    emit(PlacementSessionLoading());
+    final result = await repository.markAttendanceForSession(
+      event.collegeId,
+      event.sessionId,
+      event.attendances,
+    );
+    result.fold(
+      (failure) => emit(PlacementSessionFailure(failure.message)),
+      (_) => emit(AttendanceMarkedForSession()),
+    );
+  }
+
+  FutureOr<void> _onDeleteSessionAttendance(
+    DeleteSessionAttendanceEvent event,
+    Emitter<PlacementSessionState> emit,
+  ) async {
+    emit(PlacementSessionLoading());
+    final result = await repository.deleteAttendanceForSession(
+      event.collegeId,
+      event.sessionId,
+    );
+    result.fold(
+      (failure) => emit(PlacementSessionFailure(failure.message)),
+      (_) => emit(AttendanceDeletedForSession()),
+    );
+  }
+
+  FutureOr<void> _onGetSessionAttendance(
+    GetSessionAttendanceEvent event,
+    Emitter<PlacementSessionState> emit,
+  ) async {
+    emit(PlacementSessionLoading());
+    final result = await repository.getAttendancesForSession(
+      event.collegeId,
+      event.sessionId,
     );
     result.fold(
           (failure) => emit(PlacementSessionFailure(failure.message)),
-          (session) => emit(LoadedSessionData(session: session)),
+          (attendance) => emit(LoadedAttendanceForSession(sessionAttendanceModel: attendance)),
     );
   }
 }

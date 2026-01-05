@@ -10,7 +10,7 @@ class OnboardBloc extends Bloc<OnboardEvent, OnboardState> {
   final OnboardRepository onboardRepository;
   OnboardBloc(this.onboardRepository) : super(OnboardInitial()) {
     on<SubmitPersonalInfoEvent>(_savePersonalInfo);
-    on<LoadAllClassesEvent>(_loadAllClasses);
+    on<LoadAllCollegesEvent>(_loadAllClasses);
     on<UploadBannerImageEvent>(_uploadBannerImage);
   }
   Future<void> _savePersonalInfo(
@@ -36,7 +36,7 @@ class OnboardBloc extends Bloc<OnboardEvent, OnboardState> {
   }
 
   FutureOr<void> _loadAllClasses(
-    LoadAllClassesEvent event,
+    LoadAllCollegesEvent event,
     Emitter<OnboardState> emit,
   ) async {
     emit(OnboardLoading());
